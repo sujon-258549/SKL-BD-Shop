@@ -5,26 +5,26 @@ export default function Products() {
   const products = [
     {
       _id: 1,
-      name: "চিয়া সিডস কম্বো / Chia Seeds Combo",
-      price: 1050,
+      name: "Papos 1",
+      price: 300,
       minPrice: 990,
       image:
-        "https://amzadfood.com/wp-content/uploads/2025/07/Buter-Borfi-1kg-400x400.webp",
+        "https://i.ibb.co.com/Ps824FgF/Whats-App-Image-2025-10-21-at-22-45-41-ebdd6c23.jpg",
       desh: "Bangladesh",
       quantity: 1,
-      category: "Seeds",
+      category: "Papos",
       desc: "High-quality Chia seeds combo, rich in Omega-3 and fiber, perfect for healthy diets.",
     },
     {
       _id: 2,
-      name: "হলুদ পাউডার / Turmeric Powder",
+      name: "Papos ",
       price: 550,
       minPrice: 450,
       image:
-        "https://amzadfood.com/wp-content/uploads/2025/07/Buter-Borfi-1kg-400x400.webp",
+        "https://i.ibb.co.com/rR9JmC6W/Whats-App-Image-2025-10-21-at-22-48-45-0edc47ab.jpg",
       desh: "Bangladesh",
       quantity: 1,
-      category: "Spices",
+      category: "Papos",
       desc: "Organic turmeric powder, ideal for cooking and traditional remedies.",
     },
     {

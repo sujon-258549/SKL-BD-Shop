@@ -62,7 +62,7 @@ const ProductCard = ({ product }: { product: any }) => {
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full mb-6 object-cover transition-transform duration-300 group-hover:scale-105"
           />
 
           {/* Hover Overlay */}
@@ -92,7 +92,7 @@ const ProductCard = ({ product }: { product: any }) => {
         </div>
 
         {/* Product Info */}
-        <div className="p-3 flex flex-col justify-between h-[100px] text-center">
+        <div className="p-3 flex flex-col justify-between h-[70px] md:h-[100px] text-center">
           <h3 className="text-xs sm:text-sm font-semibold text-gray-900 line-clamp-2">
             {product.name}
           </h3>
