@@ -2,169 +2,168 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useParams } from "react-router-dom";
-import { useGetAllProductQuery, useGetSingleProductQuery } from "@/redux/fetures/auth/authApi";
-import LoadingPage from "../common/loding/LoadingPage";
-import RelevantProduct from "./RelevantProduct";
-import type { TProduct } from "./type";
-import { useAppDispatch } from "@/redux/fetures/hooks";
-import { addProduct } from "@/redux/fetures/card/shippingSlice";
 import { toast } from "sonner";
 
-export default function ProductDetails() {
-  const { id } = useParams();
-  const { data: product, isLoading, error } = useGetSingleProductQuery(id);
-  const [selected, setSelected] = useState(0);
-  const { data: products } = useGetAllProductQuery('')
-  console.log(product?.data.price)
-  // redux work slice
-  const dispatch = useAppDispatch()
-  const handelAddToCart = (product: TProduct) => {
-    dispatch(addProduct(product))
-    return toast.success("Product Add to Cart Successfully", { duration: 2000 })
-  }
+// Order Form Component
+const OrderForm = ({ productName }: { productName: string }) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    address: "",
+    quantity: 1,
+  });
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  // ✅ Step 2: Filter products by selected category
-  const filteredProducts = products?.data?.filter((p: any) =>
-    p.categories.some((c: any) => c.name === product?.data.categories[0].name)
-  )
-
-
-
-  if (isLoading) return <LoadingPage />;
-  if (error) return <p className="text-center mt-10 text-red-500">Failed to load product</p>;
-  if (!product?.data) return <p className="text-center mt-10">No product found</p>;
-
-  const p = product.data;
-
-  // Use product photos if available, otherwise fallback to placeholder
-  const thumbs: string[] = p.photos?.length ? p.photos : p.photos[0];
-
-
-
-  // ad to cart
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Order Data:", formData);
+    toast.success(`Order for ${productName} submitted!`, { duration: 2000 });
+    setFormData({ name: "", email: "", address: "", quantity: 1 });
+  };
 
   return (
-    <div className="min-h-screen text-gray-200 p-6">
-      <div className="mx-auto max-w-[1200px]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Gallery */}
-          <div className="lg:col-span-7 flex gap-4">
-            {/* Thumbnails */}
-            <div className="flex flex-col gap-3 w-24">
-              {thumbs.map((src, i) => (
+    <Card className="p-4 border-cyan-800 border-2 rounded-lg mt-4">
+      <CardContent className="p-0">
+        <h2 className="text-lg font-semibold mb-3">Order Now</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <input
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            className="p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600"
+          />
+          <textarea
+            name="address"
+            placeholder="Shipping Address"
+            rows={3}
+            value={formData.address}
+            onChange={handleChange}
+            required
+            className="p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-600 resize-none"
+          />
+          <div className="flex items-center gap-3">
+            <label className="text-sm font-medium">Quantity:</label>
+            <input
+              type="number"
+              name="quantity"
+              min={1}
+              max={10}
+              value={formData.quantity}
+              onChange={handleChange}
+              className="p-2 text-sm border border-gray-300 rounded-lg w-20 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+            />
+          </div>
+          <Button 
+            type="submit" 
+            className="bg-cyan-700 hover:bg-cyan-800 text-white mt-2 py-3 text-sm font-medium"
+          >
+            Place Order
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+};
+
+// Main Product Details Page
+export default function ProductDetailsMobile() {
+  const product = {
+    name: "Premium Wireless Headphones",
+    discount: 99,
+    price: 120,
+    stockStatus: true,
+    reviewsCount: 12,
+    description: "High-quality wireless headphones with active noise cancellation, 30-hour battery life, and premium sound quality. Perfect for music lovers and professionals.",
+    photo: "https://via.placeholder.com/400x300?text=Premium+Headphones",
+    colors: ["Black", "Silver", "Blue", "Red"],
+  };
+
+  const [selectedColor, setSelectedColor] = useState(product.colors[0]);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4">
+      <div className="max-w-md mx-auto flex flex-col gap-4">
+        {/* Product Image */}
+       
+
+        {/* Product Info */}
+        <Card className="rounded-xl shadow-lg border-0 p-4">
+          <div className="flex items-start justify-between mb-2">
+            <h1 className="text-xl font-bold text-gray-900">{product.name}</h1>
+            {product.stockStatus ? (
+              <Badge className="bg-green-500 hover:bg-green-600 text-white">In Stock</Badge>
+            ) : (
+              <Badge variant="destructive">Out of Stock</Badge>
+            )}
+          </div>
+
+          {/* Rating */}
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex text-yellow-400">
+              {"★".repeat(5)}
+            </div>
+            <span className="text-sm text-gray-600">
+              ({product.reviewsCount} reviews)
+            </span>
+          </div>
+
+          {/* Price */}
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-2xl font-bold text-gray-900">${product.discount}</span>
+            <span className="text-lg text-gray-500 line-through">${product.price}</span>
+            <Badge className="bg-red-500 text-white ml-2">
+              Save ${product.price - product.discount}
+            </Badge>
+          </div>
+
+          {/* Description */}
+          <p className="text-gray-600 text-sm leading-relaxed mb-4">
+            {product.description}
+          </p>
+
+          {/* Color Selection */}
+          <div className="mb-4">
+            <div className="text-sm font-medium text-gray-900 mb-2">Color: {selectedColor}</div>
+            <div className="flex gap-2">
+              {product.colors.map((color) => (
                 <Button
-                  key={i}
-                  variant="outline"
-                  onClick={() => setSelected(i)}
-                  className={`h-[80px] w-[80px] p-2 rounded-lg ${selected === i ? "border-cyan-700 ring-2 ring-cyan-900" : "border-transparent"
-                    }`}
+                  key={color}
+                  variant={selectedColor === color ? "default" : "outline"}
+                  className={`px-3 py-2 text-xs border-2 ${
+                    selectedColor === color 
+                      ? "bg-cyan-600 text-white border-cyan-600" 
+                      : "border-gray-300 text-gray-700"
+                  }`}
+                  onClick={() => setSelectedColor(color)}
                 >
-                  <img src={src} alt={`thumb-${i}`} className="object-contain h-full" />
+                  {color}
                 </Button>
               ))}
             </div>
-
-            {/* Main image */}
-            <Card className="rounded-lg p-4 w-full border-none">
-              <CardContent className="flex items-center justify-center">
-                <img
-                  src={thumbs[selected]}
-                  alt={p.name}
-                  className="object-cover h-full lg:h-[300px] w-full rounded-md"
-                />
-              </CardContent>
-            </Card>
           </div>
 
-          {/* Product card */}
-          <aside className="lg:col-span-5">
-            <Card className="border-cyan-800 border-4 rounded-xl sticky top-6">
-              <CardContent className="p-5">
-                <h1 className="text-xl font-semibold leading-snug">{p.name}</h1>
+          {/* Order Form */}
+          <OrderForm productName={product.name} />
+        </Card>
 
-                <div className="flex items-center gap-2 mt-3">
-                  {p.stockStatus ? (
-                    <Badge variant="secondary" className="bg-cyan-700 text-white text-xs">
-                      In stock
-                    </Badge>
-                  ) : (
-                    <Badge variant="secondary" className="bg-red-600 text-xs">
-                      Out of stock
-                    </Badge>
-                  )}
-
-                  {/* Example static stars – replace with dynamic rating if available */}
-                  <div className="flex items-center text-yellow-400 text-sm">★★★★★</div>
-                  <a href="#" className="text-sm text-blue-400 underline ml-auto">
-                    {p.reviewsCount || 0} Reviews
-                  </a>
-                </div>
-
-                <div className="mt-4 text-2xl font-bold">
-                  ${p.discount.toFixed()}
-                  {p.discount ? (
-                    <span className="ml-2 text-sm text-gray-400 line-through">
-                      ${p.price}
-                    </span>
-                  ) : null}
-                </div>
-
-
-                <Button
-                  onClick={() => handelAddToCart(product.data)}
-                  disabled={!product?.data?.stockStatus} // stockStatus === false হলে disable হবে
-                  className="w-full cursor-pointer mt-5 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    className="mr-2"
-                  >
-                    <path
-                      d="M3 3h2l.4 2M7 13h10l3-8H6.4"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  {product.stockStatus !== true ? "Add to cart" : "Out Of Stock"}
-                </Button>
-
-
-                <p className="text-sm mt-4 text-[#111415]">{p.description}</p>
-
-                {/* Options */}
-                {p.colors?.length > 0 && (
-                  <div className="mt-5">
-                    <div className="text-sm mb-2">Colour</div>
-                    <div className="flex gap-2">
-                      {p.colors.map((c: string) => (
-                        <Button
-                          key={c}
-                          variant="outline"
-                          className="px-3 py-1.5 text-sm border-[#07395a]"
-                        >
-                          {c}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </aside>
-        </div>
+        
       </div>
-      <div>
-        {/* @ts-expect-error */}
-        <RelevantProduct product={filteredProducts} />
-      </div>
-
     </div>
   );
 }

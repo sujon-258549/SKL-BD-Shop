@@ -1,12 +1,12 @@
-import Hero from "./Hero";
-import ProductManagementCards from "./Product";
+
+import Products from "./Products";
 
 
 const Home = () => {
     return (
         <div>
-            <Hero />
-            <ProductManagementCards/>
+            
+            <Products/>
         </div>
     );
 };
