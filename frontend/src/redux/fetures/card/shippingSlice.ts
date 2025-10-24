@@ -1,8 +1,10 @@
-import type { TProduct } from "@/components/allProduct/type";
+
 import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
+import type { TProductResponse } from "@/components/allProduct/type";
 
-interface TCartProduct extends TProduct {
+interface TCartProduct extends TProductResponse {
+    _id?: string
     orderQuantity: number
 }
 
