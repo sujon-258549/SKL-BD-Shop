@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { BiSolidCategory } from "react-icons/bi";
-// Components
 import {
   Dialog,
   DialogContent,
@@ -21,26 +20,18 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import Loading from "../common/loding/Loading";
 import LoadingPage from "../common/loding/LoadingPage";
 
-// API Hooks
-import {
-  useCreateCategoryMutation,
-  useGetAllCategoryQuery
-} from "@/redux/fetures/auth/authApi";
 
-// Utilities
+
 import { uploadProfileImage } from "../utility/imageUpload";
-import z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Textarea } from "../ui/textarea";
+import { useCreateCategoryMutation, useDeleteCategoryMutation, useGetAllCategoryQuery, useUpdateCategoryMutation } from "@/redux/fetures/auth/authApi";
 
-// Types
 interface CategoryFormValues {
   name: string;
-  slug: string;
-  image?: File;
+  description: string;
 }
 
 export interface TCategory {
@@ -48,85 +39,79 @@ export interface TCategory {
   name: string;
   slug: string;
   image: string;
+  description?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 const CreateCategory: React.FC = () => {
-  // State Management
-
-  const [currentFile, setCurrentFile] = useState<File | undefined>(undefined);
+  const [currentFile, setCurrentFile] = useState<File | undefined>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const categorySchema = z.object({
-    name: z.string().min(1, "name is requeued"),
-    slug: z.string().min(1, "slug is requeued"),
-  });
-
-
-  // Hooks
+  const [editingCategory, setEditingCategory] = useState<TCategory | null>(null);
 
   const [createCategory, { isLoading: isCreating }] = useCreateCategoryMutation();
-  const { data: categories, isLoading: isLoadingCategories } = useGetAllCategoryQuery('');
+  const [updateCategory, { isLoading: isUpdating }] = useUpdateCategoryMutation();
+  const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation();
 
-  // Form Setup
+  const { data: categories, isLoading: isLoadingCategories } = useGetAllCategoryQuery("");
+
   const form = useForm<CategoryFormValues>({
-    resolver: zodResolver(categorySchema),
     defaultValues: {
       name: "",
-      slug: "",
-      image: undefined,
+      description: "",
     },
     mode: "onChange",
   });
 
-  // Handlers
- 
   const handleSubmit = async (data: CategoryFormValues) => {
-    const toastId = toast.loading("Creating category...");
-
+    const toastId = toast.loading(editingCategory ? "Updating category..." : "Creating category...");
     try {
-      let imageUrl = "";
+      let imageUrl = editingCategory?.image || "";
+      if (currentFile) imageUrl = await uploadProfileImage(currentFile);
 
-      // Upload image if provided
-      if (currentFile) {
-        imageUrl = await uploadProfileImage(currentFile);
-      }
+      const payload = { ...data, image: imageUrl };
 
-      // Create category
-      const result = await createCategory({
-        ...data,
-        image: imageUrl
-      }).unwrap();
-
-      if (result.success) {
-
+      if (editingCategory) {
+        await updateCategory({ id: editingCategory._id, data: payload }).unwrap();
+        toast.success("Category updated successfully!", { id: toastId });
+      } else {
+        await createCategory(payload).unwrap();
         toast.success("Category created successfully!", { id: toastId });
       }
-      // Success handling
 
-      // Reset form and close dialog
       form.reset();
       setCurrentFile(undefined);
+      setEditingCategory(null);
       setIsDialogOpen(false);
-
-
-
     } catch (error: any) {
-      // Error handling
-      console.error("Category creation failed:", error);
-
-      const errorMessage = error?.data?.message ||
-        error.message ||
-        "Category creation failed. Please try again.";
-
-      toast.error(errorMessage, { id: toastId });
+      const message =
+        error?.data?.message || error.message || "Something went wrong!";
+      toast.error(message, { id: toastId });
     }
   };
 
-  // Loading state
-  if (isLoadingCategories) {
-    return <LoadingPage />;
-  }
+  const handleEdit = (category: TCategory) => {
+    setEditingCategory(category);
+    form.reset({
+      name: category.name,
+      description: category.description || "",
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to delete this category?")) {
+      const toastId = toast.loading("Deleting category...");
+      try {
+        await deleteCategory(id).unwrap();
+        toast.success("Category deleted successfully!", { id: toastId });
+      } catch (error: any) {
+        toast.error(error?.data?.message || "Failed to delete category", { id: toastId });
+      }
+    }
+  };
+
+  if (isLoadingCategories) return <LoadingPage />;
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -134,33 +119,37 @@ const CreateCategory: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h2 className="text-2xl font-semibold text-gray-900">Categories</h2>
-          <p className="text-gray-600 mt-1">
-            Manage your product categories
-          </p>
+          <p className="text-gray-600 mt-1">Manage your product categories</p>
         </div>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className=" text-white cursor-pointer">
-
-              <BiSolidCategory className="mr-2 " /> Add Category
+            <Button
+              className="text-white cursor-pointer"
+              onClick={() => {
+                setEditingCategory(null);
+                form.reset();
+              }}
+            >
+              <BiSolidCategory className="mr-2" />{" "}
+              {editingCategory ? "Edit Category" : "Add Category"}
             </Button>
           </DialogTrigger>
 
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
-              <DialogTitle>Add New Category</DialogTitle>
+              <DialogTitle>
+                {editingCategory ? "Edit Category" : "Add New Category"}
+              </DialogTitle>
               <DialogDescription>
-                Fill out the form below to create a new category for your products.
+                {editingCategory
+                  ? "Update the category details below."
+                  : "Fill out the form to create a new category."}
               </DialogDescription>
             </DialogHeader>
 
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(handleSubmit)}
-                className="mt-4 space-y-4"
-              >
-                {/* Name Field */}
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="mt-4 space-y-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -168,51 +157,40 @@ const CreateCategory: React.FC = () => {
                     required: "Category name is required",
                     minLength: {
                       value: 2,
-                      message: "Category name must be at least 2 characters"
-                    }
+                      message: "Name must be at least 2 characters",
+                    },
                   }}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Category Name *</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Enter category name"
-                        />
+                        <Input {...field} placeholder="Enter category name" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Slug Field */}
                 <FormField
                   control={form.control}
-                  name="slug"
-                  rules={{
-                    pattern: {
-                      value: /^[a-z0-9-]+$/,
-                      message: "Slug can only contain lowercase letters, numbers, and hyphens"
-                    }
-                  }}
-                  render={() => (
+                  name="description"
+                  render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Slug *</FormLabel>
+                      <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea/>
+                        <Textarea {...field} placeholder="Enter category description" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                
                 <Button
                   type="submit"
                   className="w-full text-white cursor-pointer"
-                  disabled={isCreating}
+                  disabled={isCreating || isUpdating}
                 >
-                  {isCreating ? <Loading /> : "Create Category"}
+                  {isCreating || isUpdating ? <Loading /> : editingCategory ? "Update Category" : "Create Category"}
                 </Button>
               </form>
             </Form>
@@ -226,50 +204,40 @@ const CreateCategory: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   #
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Slug
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Image
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                   Actions
                 </th>
               </tr>
             </thead>
-
             <tbody className="bg-white divide-y divide-gray-200">
               {categories?.length > 0 ? (
                 categories.map((category: TCategory, index: number) => (
                   <tr key={category._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {index + 1}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 text-sm text-gray-600">{index + 1}</td>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
                       {category.name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {category.slug}
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {category.description || "N/A"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <img
-                        src={category.image}
-                        alt={category.name}
-                        className="h-12 w-12 object-cover rounded-lg border"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    
+                    <td className="px-6 py-4">
                       <div className="flex gap-2">
                         <Button
                           variant="outline"
                           size="sm"
                           className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                          onClick={() => handleEdit(category)}
                         >
                           Edit
                         </Button>
@@ -277,6 +245,8 @@ const CreateCategory: React.FC = () => {
                           variant="outline"
                           size="sm"
                           className="text-red-600 border-red-200 hover:bg-red-50"
+                          onClick={() => handleDelete(category._id)}
+                          disabled={isDeleting}
                         >
                           Delete
                         </Button>
@@ -286,13 +256,8 @@ const CreateCategory: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center">
-                    <div className="text-gray-500">
-                      <p className="text-lg">No categories found</p>
-                      <p className="text-sm mt-1">
-                        Create your first category to get started
-                      </p>
-                    </div>
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                    No categories found
                   </td>
                 </tr>
               )}

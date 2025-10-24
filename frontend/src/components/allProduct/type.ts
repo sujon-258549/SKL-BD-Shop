@@ -7,24 +7,35 @@ export type TCategory = {
   updatedAt: string;
 };
 
+// export type TProduct = {
+//   _id: string;
+//   name: string;
+//   slug: string;
+//   description: string;
+//   price: number;
+//   discount?: number;
+//   status: string;
+//   stockStatus: boolean;
+//   orderQuantity?: number;
+//   photos: string[];
+//   categories: TCategory[];
+//   createdAt: string;
+//   updatedAt: string;
+// };
 
-export type TProduct = {
+interface TProduct {
   _id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  discount?: number;
-  status: string;
-  stockStatus: boolean;
-  orderQuantity?: number,
-  photos: string[];
-  categories: TCategory[];
+  name: string; // Product name
+  photo: string; // Product image URL
+  description: string; // Product description
+  price: number; // Unit price
+  stock: number; // Available stock
+  category: any; // Linked category
+  brand?: string; // Brand name (optional)
   createdAt: string;
-  updatedAt: string;
-
-};
-
+  //   updatedAt: string;
+  // User/Admin who created
+}
 
 export type TProductResponse = {
   data: TProduct[];
@@ -32,7 +43,7 @@ export type TProductResponse = {
     total: number;
     page: number;
     limit: number;
-    totalPage: number
+    totalPage: number;
   };
 };
 
@@ -68,6 +79,6 @@ export type TOrderResponse = {
     total: number;
     page: number;
     limit: number;
-    totalPage: number
+    totalPage: number;
   };
 };

@@ -5,6 +5,7 @@ import { FaBagShopping } from "react-icons/fa6";
 import { toast } from "sonner";
 
 const ProductCard = ({ product }: { product: any }) => {
+  console.log(product)
   const [isHovered, setIsHovered] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [orderData, setOrderData] = useState({
@@ -57,10 +58,10 @@ const ProductCard = ({ product }: { product: any }) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Product Image */}
+        {/* Product photo */}
         <div className="relative h-32 sm:h-52 bg-gray-100 overflow-hidden">
           <img
-            src={product.image}
+            src={product.photo}
             alt={product.name}
             className="w-full h-full mb-6 object-cover transition-transform duration-300 group-hover:scale-105"
           />
@@ -116,8 +117,8 @@ const ProductCard = ({ product }: { product: any }) => {
 
             {/* Product Details */}
             <img
-              src={product.image}
-              alt={product.name}
+              src={product?.photo}
+              alt={product?.name}
               className="w-full h-40 object-cover rounded mb-2"
             />
             <h2 className="text-lg font-semibold mb-1">{product.name}</h2>

@@ -23,7 +23,7 @@ interface FormData {
 
 const LoginForm: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const [demoUser, setDemoUser] = useState<FormData>({ email: "", password: "" });
+
 
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -31,10 +31,9 @@ const LoginForm: React.FC = () => {
 
     const form = useForm<FormData>({
         resolver: zodResolver(loginSchema),
-        defaultValues: demoUser,
     });
 
-    const { formState: { isSubmitting }, reset } = form;
+    const { formState: { isSubmitting } } = form;
 
     const onSubmit = async (data: FormData) => {
         const toastId = toast.loading("Logging in...", { duration: 2000 });
@@ -61,15 +60,6 @@ const LoginForm: React.FC = () => {
         }
     };
 
-    const fillDemoUser = (role: "admin" | "user") => {
-        const demoCredentials: Record<string, FormData> = {
-            admin: { email: "johndoe@example.com", password: "hashed_password_here" },
-            user: { email: "sujon11@gmail.com", password: "Pa$$w0rd!" },
-        };
-        const demo = demoCredentials[role];
-        setDemoUser(demo);
-        reset(demo); // fill form
-    };
 
     return (
         <div className="min-h-screen flex items-center justify-center py-12 px-4">
@@ -135,10 +125,7 @@ const LoginForm: React.FC = () => {
                             <div className="border-t border-1 border-cyan-700 flex-grow"></div>
                         </div>
                         {/* Demo Buttons */}
-                        <div className="flex flex-wrap justify-between mt-2">
-                            <Button className="text-white cursor-pointer" onClick={() => fillDemoUser("admin")}>Demo Admin</Button>
-                            <Button className="text-white cursor-pointer" onClick={() => fillDemoUser("user")}>Demo User</Button>
-                        </div>
+                        
                     </form>
                 </Form>
             </div>

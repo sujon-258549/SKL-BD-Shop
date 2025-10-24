@@ -4,16 +4,15 @@ import Home from "@/components/home/Home";
 import LoginForm from "@/components/login/LoginForm";
 // import LoginForm from "../../components/login/Login";
 import Main from "@/components/main/Main";
-import SignUp from "@/components/register/Registation";
 import Shipping from "@/components/shipping/Shipping";
 import CreateCategory from "@/components/sidebar/CreateCategory";
 import Dashboard from "@/components/sidebar/dashboard/Dashboard";
 import MainSidebar from "@/components/sidebar/MainSidebar";
-import ProductCreate from "@/components/sidebar/ProductCreate";
 import Profile from "@/components/sidebar/Profile";
 import { createBrowserRouter } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import AllProductTable from "@/components/sidebar/AllProductTable";
+import ProductsList from "@/components/sidebar/ProductsList";
 
 
 export const router = createBrowserRouter([
@@ -47,10 +46,6 @@ export const router = createBrowserRouter([
         />
     },
     {
-        path: '/signup',
-        element: <SignUp />
-    },
-    {
         path: "/dashboard",
         element: <MainSidebar></MainSidebar>,
         children: [
@@ -64,7 +59,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/dashboard/create-product",
-                element: <ProtectedRoute allowedRoles={['admin']}> <ProductCreate /></ProtectedRoute>
+                element: <ProtectedRoute allowedRoles={['admin']}> <ProductsList /></ProtectedRoute>
             },
             {
                 path: "/dashboard/profile",

@@ -31,18 +31,13 @@ const MainSidebar = () => {
       ? [
           {
             icon: <FiBook className="w-5 h-5" />,
-            label: "Create Category",
+            label: "Category",
             href: "/dashboard/create-category",
           },
           {
             icon: <FiFileText className="w-5 h-5" />,
-            label: "Create Product",
+            label: "Product",
             href: "/dashboard/create-product",
-          },
-          {
-            icon: <List className="w-5 h-5" />,
-            label: "All  Product M..",
-            href: "/dashboard/all-product-table",
           },
         ]
       : []),

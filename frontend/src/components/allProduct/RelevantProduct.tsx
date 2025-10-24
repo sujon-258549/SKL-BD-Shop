@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { RxCross2, RxChevronLeft, RxChevronRight } from "react-icons/rx";
-import type { TProduct } from "../sidebar/ProductCreate";
+import type { TProduct } from "../sidebar/ProductsList";
 
 
 import { Link } from "react-router-dom";

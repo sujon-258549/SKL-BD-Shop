@@ -1,110 +1,56 @@
 import { useState, useMemo } from "react";
 import ProductCard from "./ProductCard";
+import { useGetAllProductQuery } from "@/redux/fetures/auth/authApi"; // RTK Query
 
 export default function Products() {
-  const products = [
-    {
-      _id: 1,
-      name: "Papos 1",
-      price: 300,
-      minPrice: 990,
-      image:
-        "https://i.ibb.co.com/Ps824FgF/Whats-App-Image-2025-10-21-at-22-45-41-ebdd6c23.jpg",
-      desh: "Bangladesh",
-      quantity: 1,
-      category: "Papos",
-      desc: "High-quality Chia seeds combo, rich in Omega-3 and fiber, perfect for healthy diets.",
-    },
-    {
-      _id: 2,
-      name: "Papos ",
-      price: 550,
-      minPrice: 450,
-      image:
-        "https://i.ibb.co.com/rR9JmC6W/Whats-App-Image-2025-10-21-at-22-48-45-0edc47ab.jpg",
-      desh: "Bangladesh",
-      quantity: 1,
-      category: "Papos",
-      desc: "Organic turmeric powder, ideal for cooking and traditional remedies.",
-    },
-    {
-      _id: 3,
-      name: "মধু / Honey",
-      price: 850,
-      minPrice: 650,
-      image:
-        "https://amzadfood.com/wp-content/uploads/2025/07/Buter-Borfi-1kg-400x400.webp",
-      desh: "Bangladesh",
-      quantity: 1,
-      category: "Honey & Sweeteners",
-      desc: "Pure and natural honey, perfect for sweetening drinks and desserts.",
-    },
-    {
-      _id: 4,
-      name: "কালো জিরা / Black Cumin Seeds",
-      price: 450,
-      minPrice: 350,
-      image:
-        "https://amzadfood.com/wp-content/uploads/2025/07/Buter-Borfi-1kg-400x400.webp",
-      desh: "Bangladesh",
-      quantity: 1,
-      category: "Spices",
-      desc: "Premium black cumin seeds, essential for flavoring curries and dishes.",
-    },
-    {
-      _id: 5,
-      name: "আদা পাউডার / Ginger Powder",
-      price: 380,
-      minPrice: 280,
-      image:
-        "https://amzadfood.com/wp-content/uploads/2025/07/Buter-Borfi-1kg-400x400.webp",
-      desh: "Bangladesh",
-      quantity: 1,
-      category: "Spices",
-      desc: "Fine ginger powder, perfect for teas, cooking, and baking.",
-    },
-    {
-      _id: 6,
-      name: "লবঙ্গ / Cloves",
-      price: 620,
-      minPrice: 520,
-      image:
-        "https://amzadfood.com/wp-content/uploads/2025/07/Buter-Borfi-1kg-400x400.webp",
-      desh: "Bangladesh",
-      quantity: 1,
-      category: "Spices",
-      desc: "High-quality cloves, ideal for cooking, baking, and spice blends.",
-    },
-  ];
-
+  // ---------- State ----------
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
+  // ---------- Fetch Products ----------
+  const { data: productsResponse, isLoading } = useGetAllProductQuery("");
+  const products = productsResponse?.data || [];
+
+  // ---------- Categories ----------
   const categories = useMemo(
-    () => ["All", ...new Set(products.map((p) => p.category))],
+    () => ["All", ...new Set(products.map((p) => p.category?.name || p.category))],
     [products]
   );
 
-  const filteredProducts = useMemo(() => {
-    let filtered = products;
+  // ---------- Filtered & Sorted Products ----------
+ const filteredProducts = useMemo(() => {
+  let filtered = [...products]; // <-- make a copy
 
-    if (selectedCategory !== "All") {
-      filtered = filtered.filter((p) => p.category === selectedCategory);
-    }
-
-    if (search) {
-      filtered = filtered.filter((p) =>
-        p.name.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
-    filtered.sort((a, b) =>
-      sortOrder === "asc" ? a.price - b.price : b.price - a.price
+  // Category Filter
+  if (selectedCategory !== "All") {
+    filtered = filtered.filter(
+      (p) =>
+        (p.category?._id || p.category) === selectedCategory ||
+        (p.category?.name || p.category) === selectedCategory
     );
+  }
 
-    return filtered;
-  }, [products, selectedCategory, search, sortOrder]);
+  // Search Filter (case-insensitive)
+  if (search) {
+    filtered = filtered.filter(
+      (p) =>
+        p.name.toLowerCase().includes(search.toLowerCase()) ||
+        (p.brand?.toLowerCase() || "").includes(search.toLowerCase())
+    );
+  }
+
+  // Sort by price
+  filtered.sort((a, b) =>
+    sortOrder === "asc" ? a.price - b.price : b.price - a.price
+  );
+
+  return filtered;
+}, [products, selectedCategory, search, sortOrder]);
+
+
+  if (isLoading)
+    return <p className="text-center py-10 text-gray-500">Loading products...</p>;
 
   return (
     <main className="max-w-6xl mx-auto lg:px-3 my-10">
@@ -115,7 +61,6 @@ export default function Products() {
 
         {/* Search + Sort */}
         <div className="flex flex-col md:flex-row justify-between flex-wrap mb-6 gap-4">
-          {/* Search */}
           <div className="relative w-full md:w-1/2">
             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm sm:text-base">
               🔍
@@ -129,7 +74,6 @@ export default function Products() {
             />
           </div>
 
-          {/* Sort */}
           <div className="w-full md:w-auto">
             <select
               value={sortOrder}
