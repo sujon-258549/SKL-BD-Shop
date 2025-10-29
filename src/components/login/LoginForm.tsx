@@ -53,7 +53,7 @@ const LoginForm: React.FC = () => {
 
             toast.success("Login successful!", { id: toastId });
          
-            navigate("/", { replace: true });
+            navigate("/dashboard", { replace: true });
         } catch (error: any) {
             console.error("Login failed:", error);
             toast.error(error?.data?.message || error.message || "Login failed. Please try again.", { id: toastId });
