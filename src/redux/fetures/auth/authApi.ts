@@ -1,0 +1,245 @@
+import type {
+  TOrderResponse,
+  TProductResponse,
+} from "@/components/allProduct/type";
+import { baseApi } from "@/redux/api/baseApi";
+
+const authApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    registerUser: builder.mutation({
+      query: (userInfo) => ({
+        url: "/auth/register",
+        method: "POST",
+        body: userInfo,
+      }),
+    }),
+
+    login: builder.mutation({
+      query: (userInfo) => ({
+        url: "/auth/login",
+        method: "POST",
+        body: userInfo,
+      }),
+    }),
+
+    getMe: builder.query({
+      query: () => ({
+        url: "/me",
+        method: "GET",
+      }),
+      transformResponse: (response: any) => {
+        return response.data;
+      },
+      providesTags: ["product"],
+    }),
+    allUser: builder.query({
+      query: () => ({
+        url: "/",
+        method: "GET",
+      }),
+      transformResponse: (response: any) => {
+        return response.data;
+      },
+      providesTags: ["product"],
+    }),
+
+    // Category
+    createCategory: builder.mutation({
+      query: (userInfo) => ({
+        url: "/category",
+        method: "POST",
+        body: userInfo,
+      }),
+    }),
+    getAllCategory: builder.query({
+      query: () => ({
+        url: "/category",
+        method: "GET",
+      }),
+      transformResponse: (response: any) => {
+        return response.data;
+      },
+      providesTags: ["product"],
+    }),
+
+    // ✅ Update Category
+    updateCategory: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/category/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["category"],
+    }),
+
+    // ✅ Delete Category
+    deleteCategory: builder.mutation({
+      query: (id) => ({
+        url: `/category/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["category"],
+    }),
+
+    // Product
+    createProduct: builder.mutation({
+      query: (userInfo) => ({
+        url: "/products",
+        method: "POST",
+        body: userInfo,
+      }),
+    }),
+
+    getAllProduct: builder.query({
+      query: (args) => {
+        const params = new URLSearchParams();
+        if (args) {
+          args.forEach((element: { name: string; value: string }) => {
+            params.append(element.name, element.value);
+          });
+        }
+        return {
+          url: "/products",
+          method: "GET",
+          params: params,
+        };
+      },
+      transformResponse: (response: TProductResponse) => {
+        return {
+          data: response.data,
+          meta: response.meta,
+        };
+      },
+      providesTags: ["product"],
+    }),
+
+    getSingleProduct: builder.query({
+      query: (id) => ({
+        url: `/products/${id}`, //http://localhost:4000/api/products/68b7ea20941d34bc4441581a
+        method: "GET",
+      }),
+      transformResponse: (response: any) => {
+        return response;
+      },
+      providesTags: ["product"],
+    }),
+    updateProduct: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/products/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["product"],
+    }),
+    deleteProduct: builder.mutation({
+      query: (id) => ({
+        url: `/products/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["product"],
+    }),
+
+    // order
+
+    createOrder: builder.mutation({
+      query: (userInfo) => ({
+        url: "/order",
+        method: "POST",
+        body: userInfo,
+      }),
+    }),
+    getMyOrder: builder.query({
+      query: (args) => {
+        const params = new URLSearchParams();
+        if (args) {
+          args.forEach((element: { name: string; value: string }) => {
+            params.append(element.name, element.value);
+          });
+        }
+        return {
+          url: "/order/my-order",
+          method: "GET",
+          params: params,
+        };
+      },
+      transformResponse: (response: TOrderResponse) => {
+        return {
+          data: response.data,
+          meta: response.meta,
+        };
+      },
+      providesTags: ["product"],
+    }),
+    getAllOrder: builder.query({
+      query: (args) => {
+        const params = new URLSearchParams();
+        if (args) {
+          args.forEach((element: { name: string; value: string }) => {
+            params.append(element.name, element.value);
+          });
+        }
+        return {
+          url: "/order",
+          method: "GET",
+          params: params,
+        };
+      },
+      transformResponse: (response: TOrderResponse) => {
+        return {
+          data: response.data,
+          meta: response.meta,
+        };
+      },
+      providesTags: ["product"],
+    }),
+
+    updateOrderStatus: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/order/status/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+    updateOrder: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/order/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+    }),
+
+    // dashboard
+    adminDashboard: builder.query({
+      query: () => ({
+        url: "/admin",
+        method: "GET",
+      }),
+      transformResponse: (response: any) => {
+        return response.data;
+      },
+      providesTags: ["product"],
+    }),
+  }),
+});
+
+export const {
+  useRegisterUserMutation,
+  useLoginMutation,
+  useGetMeQuery,
+  useCreateCategoryMutation,
+  useGetAllCategoryQuery,
+  useUpdateCategoryMutation,
+  useDeleteProductMutation,
+  useDeleteCategoryMutation,
+  useCreateProductMutation,
+  useGetAllProductQuery,
+  useGetSingleProductQuery,
+  useAdminDashboardQuery,
+  useCreateOrderMutation,
+  useGetMyOrderQuery,
+  useUpdateProductMutation,
+  useGetAllOrderQuery,
+  useUpdateOrderStatusMutation,
+  useAllUserQuery,
+  useUpdateOrderMutation, 
+} = authApi;
