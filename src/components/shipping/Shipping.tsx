@@ -353,7 +353,7 @@ const Shipping = () => {
                   </div>
                 </CardContent>
                 <CardFooter className="flex-col space-y-4">
-                  <Button onClick={handleOrder} className="w-full text-white">
+                  <Button onClick={handleOrder} className="w-full cursor-pointer text-white">
                     Confirm Order
                   </Button>
                 </CardFooter>
