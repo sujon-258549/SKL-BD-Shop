@@ -48,7 +48,6 @@ const Shipping = () => {
   const products = useAppSelector(orderSelector);
   const deliveryCost = useAppSelector(deliveryAmountValue);
   const user = useAppSelector(userCurrentUser) as any;
-  const role = user?.userInfo?.role;
 
   const [name, setName] = useState(user?.userInfo?.name || "");
   const [phone, setPhone] = useState(user?.userInfo?.phone || "");
@@ -75,8 +74,6 @@ const Shipping = () => {
   const totalPrice = subtotal + deliveryCost;
 
   const handleOrder = async () => {
-    if (!role) return toast.error("Please login");
-
     const toastId = toast.loading("Processing order...", { duration: 2000 });
 
     if (!name || !phone || !address) {
