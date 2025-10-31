@@ -33,7 +33,7 @@ export default function Component() {
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                className="group size-8 md:hidden"
+                className="group cursor-pointer size-8 md:hidden"
                 variant="ghost"
                 size="icon"
               >

@@ -1,6 +1,5 @@
 import { 
   ShoppingCart, 
-  DollarSign, 
   Package, 
   Calendar,
   CreditCard,
@@ -12,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Badge } from "../../ui/badge";
 import { useGetMyOrderQuery } from "@/redux/fetures/auth/authApi";
 import LoadingPage from "@/components/common/loding/LoadingPage";
+import { FaBangladeshiTakaSign } from "react-icons/fa6";
 
 
 
@@ -40,8 +40,8 @@ const UserDashboard = () => {
     },
     { 
       title: "Total Spent", 
-      value: `$${totalSpent.toFixed(2)}`, 
-      icon: DollarSign, 
+      value: `${totalSpent.toFixed(2)}`, 
+      icon: FaBangladeshiTakaSign , 
       description: "Total amount spent" 
     },
     { 

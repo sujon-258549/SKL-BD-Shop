@@ -79,8 +79,8 @@ const Shipping = () => {
 
     const toastId = toast.loading("Processing order...", { duration: 2000 });
 
-    if (!name || !phone || !address || !district) {
-      toast.error("Please fill all fields", { id: toastId });
+    if (!name || !phone || !address) {
+      toast.error("দয়া করে সকল তথ্য পূরণ করুন", { id: toastId });
       return;
     }
 

@@ -93,8 +93,7 @@ const ProductDetails = () => {
     if (
       !orderData.name ||
       !orderData.phone ||
-      !orderData.address ||
-      !orderData.district
+      !orderData.address 
     ) {
       toast.error("দয়া করে সকল তথ্য পূরণ করুন");
       return;
@@ -656,7 +655,7 @@ const ProductDetails = () => {
               </h4>
               <div className="flex justify-between text-sm">
                 <span>পণ্যের মূল্য:</span>
-                <span>${productTotal}</span>
+                <span>৳{productTotal}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>ডেলিভারি চার্জ:</span>
@@ -684,7 +683,7 @@ const ProductDetails = () => {
               ) : (
                 <>
                   <Zap className="h-4 w-4 mr-2" />
-                  অর্ডার কনফার্ম করুন - ${productTotal} + ৳{deliveryCharge}
+                  অর্ডার কনফার্ম করুন - ৳{productTotal} + ৳{deliveryCharge}
                 </>
               )}
             </Button>

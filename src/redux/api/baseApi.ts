@@ -3,8 +3,8 @@ import type { RootState } from "../fetures/store"; // Adjust the import path as 
 // import { setUser } from "../features/auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://backend-black-two-21.vercel.app/api",
-  // baseUrl: "http://localhost:4000/api",
+  // baseUrl: "https://backend-black-two-21.vercel.app/api",
+  baseUrl: "http://localhost:4000/api",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth?.token;
     console.log(token);
@@ -17,7 +17,7 @@ const baseQuery = fetchBaseQuery({
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  tagTypes: ["product", "category"],
+  tagTypes: ["product", "category", "User", "order"],
   baseQuery: baseQuery,
   endpoints: () => ({}),
 });

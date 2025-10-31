@@ -236,7 +236,7 @@ const CreateCategory: React.FC = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                          className="text-blue-600 cursor-pointer border-blue-200 hover:bg-blue-50"
                           onClick={() => handleEdit(category)}
                         >
                           Edit
@@ -244,7 +244,7 @@ const CreateCategory: React.FC = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-red-600 border-red-200 hover:bg-red-50"
+                          className="text-red-600 cursor-pointer border-red-200 hover:bg-red-50"
                           onClick={() => handleDelete(category._id)}
                           disabled={isDeleting}
                         >

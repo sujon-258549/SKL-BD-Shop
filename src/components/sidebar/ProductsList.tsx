@@ -444,7 +444,7 @@ const ProductsList: React.FC = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-cyan-600 border-cyan-200 hover:bg-blue-50"
+                          className="text-cyan-600 border-cyan-200 cursor-pointer hover:bg-blue-50"
                           onClick={() => handleEdit(product)}
                         >
                           Edit
@@ -452,7 +452,7 @@ const ProductsList: React.FC = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-red-600 border-red-200 hover:bg-red-50"
+                          className="text-red-600 border-red-200 cursor-pointer hover:bg-red-50"
                           onClick={() => handleDelete(product._id)}
                           disabled={isDeleting}
                         >

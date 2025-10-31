@@ -1,20 +1,33 @@
 import { useGetMeQuery } from "@/redux/fetures/auth/authApi";
 import LoadingPage from "../common/loding/LoadingPage";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { useState } from "react";
-import { Pencil, Save, X, Camera, Shield, Key, Mail, Phone, User, Calendar, RefreshCw } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import {
+  Calendar,
+  Mail,
+  Phone,
+  User,
+  Shield,
+  Crown,
+  Key,
+  Eye,
+  Server,
+  Edit,
+  Lock,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const Profile = () => {
-  const { data: profile, isLoading, refetch } = useGetMeQuery('');
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedProfile, setEditedProfile] = useState({
-    name: "",
-    email: "",
-    phoneNumber: ""
-  });
+const AdminProfile = () => {
+  const { data: profile, isLoading, refetch } = useGetMeQuery("");
+  const navigate = useNavigate();
+
+  console.log(profile);
 
   if (isLoading) {
     return <LoadingPage />;
@@ -22,329 +35,384 @@ const Profile = () => {
 
   if (!profile) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-cyan-50 p-4">
-        <div className="text-center p-8 bg-white rounded-xl shadow-lg max-w-md">
-          <h2 className="text-2xl font-bold text-cyan-800 mb-4">Profile Not Available</h2>
-          <p className="text-cyan-600 mb-6">Failed to load profile data. Please try again.</p>
-          <Button onClick={() => refetch()} className="bg-cyan-600 hover:bg-cyan-700">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Retry
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 p-4">
+        <div className="text-center p-8 bg-white rounded-2xl shadow-xl max-w-md border border-cyan-200">
+          <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <User className="w-8 h-8 text-cyan-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-cyan-800 mb-3">
+            Profile Not Available
+          </h2>
+          <p className="text-cyan-600 mb-6">
+            We couldn't load your admin profile information.
+          </p>
+          <Button
+            onClick={() => refetch()}
+            className="bg-cyan-600 hover:bg-cyan-700 cursor-pointer text-white px-6 py-2 cursor-pointer rounded-lg transition-all duration-200"
+          >
+            Try Again
           </Button>
         </div>
       </div>
     );
   }
 
-  // Initialize edited profile when data is available
-  if (!editedProfile.name && profile) {
-    setEditedProfile({
-      name: profile.name,
-      email: profile.email,
-      phoneNumber: profile.phoneNumber
-    });
-  }
-
-  const handleEditToggle = () => {
-    if (isEditing) {
-      // Cancel editing - reset form
-      setEditedProfile({
-        name: profile.name,
-        email: profile.email,
-        phoneNumber: profile.phoneNumber
-      });
-    }
-    setIsEditing(!isEditing);
-  };
-
-  const handleSave = () => {
-    // Here you would typically make an API call to update the profile
-    console.log("Saving profile:", editedProfile);
-    setIsEditing(false);
-    // Add your update logic here
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    setEditedProfile(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
+  };
+
+  // Generate profile logo based on name
+
+  const handleEditProfile = () => {
+    navigate("/dashboard/update-admin");
+  };
+
+  const handleChangePassword = () => {
+    navigate("/dashboard/change-password");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cyan-50 to-cyan-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-cyan-800 mb-3">User Profile</h1>
-          <p className="text-cyan-600 text-lg">Manage your account settings and personal information</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Profile Card */}
-          <div className="lg:col-span-1">
-            <Card className="overflow-hidden border-2 border-cyan-100 shadow-lg">
-              <div className="bg-gradient-to-r from-cyan-500 to-cyan-600 h-20"></div>
-              <CardHeader className="pt-0 pb-6">
-                <div className="flex justify-center -mt-12 mb-4">
-                  <div className="relative">
-                    <img
-                      src={profile.profileImage}
-                      alt={profile.name}
-                      className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
-                    />
-                    <button className="absolute bottom-2 right-2 bg-cyan-600 text-white p-2 rounded-full hover:bg-cyan-700 transition-colors shadow-md">
-                      <Camera className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                <div className="text-center">
-                  <CardTitle className="text-xl text-cyan-900">{profile.name}</CardTitle>
-                  <div className="inline-block mt-2 px-3 py-1 bg-cyan-100 text-cyan-800 rounded-full text-sm font-medium capitalize">
-                    {profile.role}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pb-6">
-                <div className="space-y-4">
-                  <div className="flex items-center">
-                    <div className="bg-cyan-100 p-2 rounded-full mr-3">
-                      <Calendar className="w-5 h-5 text-cyan-700" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-cyan-600">Member Since</h3>
-                      <p className="text-cyan-900">{formatDate(profile.createdAt)}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <div className="bg-cyan-100 p-2 rounded-full mr-3">
-                      <Shield className="w-5 h-5 text-cyan-700" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-cyan-600">Status</h3>
-                      <p className={profile.isBlocked ? "text-red-600 font-medium" : "text-green-600 font-medium"}>
-                        {profile.isBlocked ? "Blocked" : "Active"}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <div className="bg-cyan-100 p-2 rounded-full mr-3">
-                      <RefreshCw className="w-5 h-5 text-cyan-700" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-medium text-cyan-600">Last Updated</h3>
-                      <p className="text-cyan-900">{formatDate(profile.updatedAt)}</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Quick Actions Card */}
-            <Card className="mt-6 border-2 border-cyan-100 shadow-lg">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-cyan-800 text-lg">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start text-cyan-700 border-cyan-200 hover:bg-cyan-50">
-                  <Key className="w-4 h-4 mr-2" />
-                  Change Password
-                </Button>
-                <Button variant="outline" className="w-full justify-start text-cyan-700 border-cyan-200 hover:bg-cyan-50">
-                  <Shield className="w-4 h-4 mr-2" />
-                  Privacy Settings
-                </Button>
-                <Button variant="outline" className="w-full justify-start text-cyan-700 border-cyan-200 hover:bg-cyan-50">
-                  <Mail className="w-4 h-4 mr-2" />
-                  Email Preferences
-                </Button>
-              </CardContent>
-            </Card>
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header with Action Buttons */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full flex items-center justify-center mr-4 shadow-lg">
+              <Crown className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-800 to-blue-700 bg-clip-text text-transparent">
+                Admin Profile
+              </h1>
+              <p className="text-cyan-600">
+                System Administrator Account Overview
+              </p>
+            </div>
           </div>
 
-          {/* Edit Form */}
-          <div className="lg:col-span-2">
-            <Card className="border-2 border-cyan-100 shadow-lg">
-              <CardHeader className="border-b border-cyan-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-cyan-800">Personal Information</CardTitle>
-                    <CardDescription className="text-cyan-600">
-                      Update your personal information and contact details
-                    </CardDescription>
+          <div className="flex gap-3">
+            <Button
+              onClick={handleEditProfile}
+              className="bg-cyan-600 hover:bg-cyan-700 cursor-pointer text-white px-6 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"
+            >
+              <Edit className="w-4 h-4" />
+              Edit Profile
+            </Button>
+            <Button
+              onClick={handleChangePassword}
+              variant="outline"
+              className="border-cyan-600 cursor-pointer text-cyan-700 hover:bg-cyan-50 px-6 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"
+            >
+              <Lock className="w-4 h-4" />
+              Change Password
+            </Button>
+          </div>
+        </div>
+
+        {/* Single Card with All Information */}
+        <Card className="border-0 shadow-2xl rounded-2xl overflow-hidden bg-white">
+          <div className="bg-gradient-to-r from-cyan-600 to-blue-600 h-3"></div>
+          <CardHeader className="pb-6">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              {/* Profile Logo */}
+              <div className="flex-shrink-0">
+                {profile?.profileImage ? (
+                  <img
+                    src={profile.profileImage}
+                    alt={profile.name}
+                    className="w-24 h-24 rounded-full object-cover shadow-xl"
+                  />
+                ) : (
+                  <div className="w-24 h-24 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-xl">
+                    {profile?.name
+                      ? profile.name.slice(0, 2).toUpperCase()
+                      : "A"}
                   </div>
-                  <div>
-                    {isEditing ? (
-                      <div className="flex space-x-2">
-                        <Button 
-                          onClick={handleSave}
-                          className="text-white cursor-pointer"
-                          size="sm"
-                        >
-                          <Save className="w-4 h-4 mr-1" />
-                          Save Changes
-                        </Button>
-                        <Button 
-                          onClick={handleEditToggle}
-                          variant="outline"
-                          size="sm"
-                          className="text-cyan-800 border-cyan-700 cursor-pointer"
-                        >
-                          <X className="w-4 h-4 mr-1" />
-                          Cancel
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button 
-                        onClick={handleEditToggle} 
-                        size="sm"
-                        className="text-white cursor-pointer"
-                      >
-                        <Pencil className="w-4 h-4 mr-1" />
-                        Edit Profile
-                      </Button>
-                    )}
+                )}
+              </div>
+
+              {/* Profile Info */}
+              <div className="flex-1 text-center md:text-left">
+                <CardTitle className="text-3xl font-bold text-gray-800 mb-2">
+                  {profile.name}
+                </CardTitle>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
+                  <div className="inline-flex items-center px-4 py-2 bg-cyan-100 text-cyan-800 rounded-full text-sm font-semibold border border-cyan-200">
+                    <Crown className="w-4 h-4 mr-2" />
+                    {profile.role.toUpperCase()}
+                  </div>
+                  <div
+                    className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold ${
+                      profile.isBlocked
+                        ? "bg-red-100 text-red-800 border border-red-200"
+                        : "bg-green-100 text-green-800 border border-green-200"
+                    }`}
+                  >
+                    <Shield className="w-4 h-4 mr-2" />
+                    {profile.isBlocked ? "BLOCKED" : "ACTIVE"}
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="text-cyan-700">Full Name</Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-3 w-4 h-4 text-cyan-500" />
-                        {isEditing ? (
-                          <Input
-                            id="name"
-                            value={editedProfile.name}
-                            onChange={(e) => handleInputChange("name", e.target.value)}
-                            className="pl-10 border-cyan-200 focus:border-cyan-500"
-                          />
-                        ) : (
-                          <p className="text-cyan-900 py-2 px-3 pl-10 rounded-md border border-cyan-100 bg-cyan-50">
-                            {profile.name}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-cyan-700">Email Address</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 w-4 h-4 text-cyan-500" />
-                        {isEditing ? (
-                          <Input
-                            id="email"
-                            type="email"
-                            value={editedProfile.email}
-                            onChange={(e) => handleInputChange("email", e.target.value)}
-                            className="pl-10 border-cyan-200 focus:border-cyan-500"
-                          />
-                        ) : (
-                          <p className="text-cyan-900 py-2 px-3 pl-10 rounded-md border border-cyan-100 bg-cyan-50">
-                            {profile.email}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-cyan-700">Phone Number</Label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-3 w-4 h-4 text-cyan-500" />
-                      {isEditing ? (
-                        <Input
-                          id="phone"
-                          value={editedProfile.phoneNumber}
-                          onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
-                          className="pl-10 border-cyan-200 focus:border-cyan-500"
-                        />
-                      ) : (
-                        <p className="text-cyan-900 py-2 px-3 pl-10 rounded-md border border-cyan-100 bg-cyan-50">
-                          {profile.phoneNumber}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="role" className="text-cyan-700">Account Role</Label>
-                    <div className="relative">
-                      <Shield className="absolute left-3 top-3 w-4 h-4 text-cyan-500" />
-                      <p className="text-cyan-900 py-2 px-3 pl-10 rounded-md border border-cyan-100 bg-cyan-50 capitalize">
-                        {profile.role}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="userId" className="text-cyan-700">User ID</Label>
-                    <p className="text-cyan-600 text-sm py-2 px-3 rounded-md border border-cyan-100 bg-cyan-50">
-                      {profile._id}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Security Card */}
-            <Card className="mt-6 border-2 border-cyan-100 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-cyan-800">Security Settings</CardTitle>
-                <CardDescription className="text-cyan-600">
-                  Manage your password and security settings
+                <CardDescription className="text-cyan-600 text-base">
+                  Administrator since {formatDate(profile.createdAt)}
                 </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between py-3 border-b border-cyan-100">
-                    <div className="flex items-center">
-                      <div className="bg-cyan-100 p-2 rounded-full mr-4">
-                        <Key className="w-5 h-5 text-cyan-700" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-cyan-800">Password</h3>
-                        <p className="text-sm text-cyan-600">Last changed 2 weeks ago</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" className="border-cyan-200 text-cyan-700 hover:bg-cyan-50">
-                      Change Password
-                    </Button>
-                  </div>
+              </div>
+            </div>
+          </CardHeader>
 
-                  <div className="flex items-center justify-between py-3">
-                    <div className="flex items-center">
-                      <div className="bg-cyan-100 p-2 rounded-full mr-4">
-                        <Shield className="w-5 h-5 text-cyan-700" />
+          <CardContent className="pb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Left Column - Personal Information */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-bold text-cyan-800 mb-4 flex items-center">
+                    <User className="w-5 h-5 mr-2" />
+                    Personal Information
+                  </h3>
+
+                  <div className="space-y-4">
+                    {/* Name */}
+                    <div className="p-4 bg-cyan-50 rounded-xl border border-cyan-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center">
+                          <User className="w-4 h-4 text-cyan-600 mr-2" />
+                          <label className="text-sm font-semibold text-cyan-700">
+                            Full Name
+                          </label>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleEditProfile}
+                          className="text-cyan-600 cursor-pointer hover:text-cyan-700 hover:bg-cyan-100"
+                        >
+                          <Edit className="w-3 h-3" />
+                        </Button>
                       </div>
-                      <div>
-                        <h3 className="font-medium text-cyan-800">Two-Factor Authentication</h3>
-                        <p className="text-sm text-cyan-600">Add an extra layer of security</p>
-                      </div>
+                      <p className="text-cyan-900 font-medium text-lg pl-6">
+                        {profile.name}
+                      </p>
                     </div>
-                    <Button variant="outline" className="border-cyan-200 text-cyan-700 hover:bg-cyan-50">
-                      Enable 2FA
-                    </Button>
+
+                    {/* Email */}
+                    <div className="p-4 bg-cyan-50 rounded-xl border border-cyan-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center">
+                          <Mail className="w-4 h-4 text-cyan-600 mr-2" />
+                          <label className="text-sm font-semibold text-cyan-700">
+                            Email Address
+                          </label>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleEditProfile}
+                          className="text-cyan-600 cursor-pointer hover:text-cyan-700 hover:bg-cyan-100"
+                        >
+                          <Edit className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      <p className="text-cyan-900 font-medium text-lg pl-6">
+                        {profile.email}
+                      </p>
+                      <p className="text-cyan-600 text-sm pl-6 mt-1">
+                        Primary contact email
+                      </p>
+                    </div>
+
+                    {/* Phone */}
+                    <div className="p-4 bg-cyan-50 rounded-xl border border-cyan-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center">
+                          <Phone className="w-4 h-4 text-cyan-600 mr-2" />
+                          <label className="text-sm font-semibold text-cyan-700">
+                            Phone Number
+                          </label>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleEditProfile}
+                          className="text-cyan-600 cursor-pointer hover:text-cyan-700 hover:bg-cyan-100"
+                        >
+                          <Edit className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      <p className="text-cyan-900 font-medium text-lg pl-6">
+                        {profile.phoneNumber || "Not provided"}
+                      </p>
+                      <p className="text-cyan-600 text-sm pl-6 mt-1">
+                        Contact phone number
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+
+                {/* Security Information */}
+                <div>
+                  <h3 className="text-xl font-bold text-cyan-800 mb-4 flex items-center">
+                    <Shield className="w-5 h-5 mr-2" />
+                    Security Information
+                  </h3>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-cyan-50 rounded-lg border border-cyan-200">
+                      <div className="flex items-center">
+                        <Key className="w-4 h-4 mr-2 text-cyan-600" />
+                        <span className="text-cyan-700">Password</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-600 text-sm font-medium">
+                          ••••••••
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleChangePassword}
+                          className="text-cyan-600 hover:text-cyan-700 cursor-pointer hover:bg-cyan-100 p-1"
+                        >
+                          <Edit className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-cyan-50 rounded-lg border border-cyan-200">
+                      <div className="flex items-center">
+                        <Eye className="w-4 h-4 mr-2 text-cyan-600" />
+                        <span className="text-cyan-700">
+                          Two-Factor Authentication
+                        </span>
+                      </div>
+                      <span className="text-green-600 text-sm font-medium">
+                        Enabled
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-cyan-50 rounded-lg border border-cyan-200">
+                      <div className="flex items-center">
+                        <Server className="w-4 h-4 mr-2 text-cyan-600" />
+                        <span className="text-cyan-700">Last Login</span>
+                      </div>
+                      <span className="text-cyan-900 text-sm">
+                        Today, 14:30
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column - Account Details */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-bold text-cyan-800 mb-4 flex items-center">
+                    <Calendar className="w-5 h-5 mr-2" />
+                    Account Timeline
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div className="p-4 bg-green-50 rounded-xl border border-green-200">
+                      <div className="flex items-center mb-2">
+                        <Calendar className="w-4 h-4 text-green-600 mr-2" />
+                        <label className="text-sm font-semibold text-green-700">
+                          Account Created
+                        </label>
+                      </div>
+                      <p className="text-green-900 font-medium pl-6">
+                        {formatDate(profile.createdAt)}
+                      </p>
+                      <p className="text-green-600 text-sm pl-6 mt-1">
+                        Your admin account was created
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                      <div className="flex items-center mb-2">
+                        <Calendar className="w-4 h-4 text-blue-600 mr-2" />
+                        <label className="text-sm font-semibold text-blue-700">
+                          Last Updated
+                        </label>
+                      </div>
+                      <p className="text-blue-900 font-medium pl-6">
+                        {formatDate(profile.updatedAt)}
+                      </p>
+                      <p className="text-blue-600 text-sm pl-6 mt-1">
+                        Profile information was last updated
+                      </p>
+                    </div>
+
+                    <div className="p-4 bg-cyan-50 rounded-xl border border-cyan-200">
+                      <div className="flex items-center mb-2">
+                        <Shield className="w-4 h-4 text-cyan-600 mr-2" />
+                        <label className="text-sm font-semibold text-cyan-700">
+                          Account Status
+                        </label>
+                      </div>
+                      <div className="flex items-center justify-between pl-6">
+                        <p className="text-cyan-900 font-medium">
+                          {profile.isBlocked
+                            ? "Account Blocked"
+                            : "Account Active"}
+                        </p>
+                        <div
+                          className={`w-3 h-3 rounded-full ${
+                            profile.isBlocked ? "bg-red-500" : "bg-green-500"
+                          }`}
+                        ></div>
+                      </div>
+                      <p className="text-cyan-600 text-sm pl-6 mt-1">
+                        {profile.isBlocked
+                          ? "Account access is currently restricted"
+                          : "Account is in good standing"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Role Information */}
+                <div>
+                  <h3 className="text-xl font-bold text-cyan-800 mb-4 flex items-center">
+                    <Crown className="w-5 h-5 mr-2" />
+                    Role & Permissions
+                  </h3>
+
+                  <div className="p-4 bg-cyan-50 rounded-xl border border-cyan-200">
+                    <div className="flex items-center mb-3">
+                      <Shield className="w-4 h-4 text-cyan-600 mr-2" />
+                      <label className="text-sm font-semibold text-cyan-700">
+                        Administrator Privileges
+                      </label>
+                    </div>
+                    <ul className="text-cyan-700 text-sm space-y-2 pl-6">
+                      <li className="flex items-center">
+                        <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full mr-2"></div>
+                        Full system access and control
+                      </li>
+                      <li className="flex items-center">
+                        <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full mr-2"></div>
+                        User management capabilities
+                      </li>
+                      <li className="flex items-center">
+                        <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full mr-2"></div>
+                        System configuration rights
+                      </li>
+                      <li className="flex items-center">
+                        <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full mr-2"></div>
+                        Database administration access
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 };
 
-export default Profile;
+export default AdminProfile;

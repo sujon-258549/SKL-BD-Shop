@@ -38,7 +38,7 @@ const ProductCard = ({ product }: { product: any }) => {
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Product photo */}
-        <div className="relative h-32 sm:h-52 bg-gray-100 overflow-hidden">
+        <div className="relative h-36  md:h-44 bg-gray-100 overflow-hidden">
           <img
             src={product.photo}
             alt={product.name}
@@ -55,27 +55,26 @@ const ProductCard = ({ product }: { product: any }) => {
               {/* Add to Cart Button */}
               <button
                 onClick={() => handleAddToCart(product)}
-                className="p-2 ml-3 bg-primary cursor-pointer text-white mb-1 shadow-sm border border-gray-300 hover:bg-primary hover:text-white text-primary transition-all duration-300 flex items-center"
+                className="p-2 ml-3 bg-primary cursor-pointer text-white mb-1 shadow-sm border border-gray-300 hover:bg-primary hover:text-white  transition-all duration-300 flex items-center"
               >
                 <FaBagShopping size={18} />
               </button>
 
               {/* Details Button */}
-              <Link to={`/product/${product?._id}`}>
-                <button className="px-4 sm:px-6 py-2 w-full bg-primary text-white font-semibold hover:bg-cyan-700 transition-all duration-300 text-xs sm:text-sm">
-                  বিস্তারিত
-                </button>
-              </Link>
             </div>
           </div>
         </div>
-
+        <Link to={`/product/${product?._id}`}>
+          <button className="px-4 sm:px-6 py-2 cursor-pointer w-full bg-primary text-white font-semibold hover:bg-cyan-700 transition-all duration-300 text-[10px] md:text-sm">
+            বিস্তারিত
+          </button>
+        </Link>
         {/* Product Info */}
-        <div className="p-3 flex flex-col justify-between h-[70px] md:h-[100px] text-center">
-          <h3 className="text-xs sm:text-sm font-semibold text-gray-900 line-clamp-2">
+        <div className="p-3 flex flex-col justify-between h-[60px] md:h-[100px] text-center">
+          <h3 className="text-[8px] md:text-sm font-semibold text-gray-900 line-clamp-2">
             {product.name}
           </h3>
-          <p className="text-sm sm:text-base font-bold text-primary">
+          <p className="text-[12px] md:text-xl font-bold text-primary">
             {product.price} ৳
           </p>
         </div>

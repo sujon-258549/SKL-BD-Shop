@@ -8,6 +8,7 @@ import { FaHome } from "react-icons/fa";
 import { useAppSelector } from "@/redux/fetures/hooks";
 import { logOut, userCurrentUser } from "@/redux/fetures/auth/authSlice";
 import { useDispatch } from "react-redux";
+import { User } from "lucide-react";
 
 const MainSidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -51,6 +52,11 @@ const MainSidebar = () => {
             icon: <FiFileText className="w-5 h-5" />,
             label: "Product",
             href: "/dashboard/create-product",
+          },
+          {
+            icon: <User className="w-5 h-5" />,
+            label: "Profile",
+            href: "/dashboard/Profile",
           },
         ]
       : []),
@@ -155,7 +161,7 @@ const MainSidebar = () => {
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-semibold text-white bg-red-500 rounded-full shadow hover:bg-red-600 transition-all duration-200"
+              className="flex items-center cursor-pointer justify-center gap-2 w-full px-4 py-2 text-sm font-semibold text-white bg-red-500 rounded-full shadow hover:bg-red-600 transition-all duration-200"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

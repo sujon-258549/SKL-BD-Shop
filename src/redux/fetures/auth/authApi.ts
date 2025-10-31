@@ -32,6 +32,27 @@ const authApi = baseApi.injectEndpoints({
       },
       providesTags: ["product"],
     }),
+
+    // Update user info
+    updateAdmin: builder.mutation({
+      query: (updateData) => ({
+        url: `/update`,
+        method: "PATCH",
+        body: updateData,
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    // Change user password
+    changePassword: builder.mutation({
+      query: (ChangePassword) => ({
+        url: `/change-password`,
+        method: "PATCH",
+        body: ChangePassword,
+      }),
+      invalidatesTags: ["User"],
+    }),
+
     allUser: builder.query({
       query: () => ({
         url: "/",
@@ -123,6 +144,16 @@ const authApi = baseApi.injectEndpoints({
       },
       providesTags: ["product"],
     }),
+    getSingleOrder: builder.query({
+      query: (id) => ({
+        url: `/order/${id}`, //http://localhost:4000/api/products/68b7ea20941d34bc4441581a
+        method: "GET",
+      }),
+      transformResponse: (response: any) => {
+        return response;
+      },
+      providesTags: ["product"],
+    }),
     updateProduct: builder.mutation({
       query: ({ id, data }) => ({
         url: `/products/${id}`,
@@ -147,6 +178,7 @@ const authApi = baseApi.injectEndpoints({
         method: "POST",
         body: userInfo,
       }),
+      
     }),
     getMyOrder: builder.query({
       query: (args) => {
@@ -190,7 +222,16 @@ const authApi = baseApi.injectEndpoints({
           meta: response.meta,
         };
       },
-      providesTags: ["product"],
+      providesTags: ["order"],
+    }),
+
+        // ✅ Delete Category
+    deleteOrder: builder.mutation({
+      query: (id) => ({
+        url: `/order/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["order"],
     }),
 
     updateOrderStatus: builder.mutation({
@@ -206,6 +247,7 @@ const authApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
+       invalidatesTags: ["order"],
     }),
 
     // dashboard
@@ -241,5 +283,9 @@ export const {
   useGetAllOrderQuery,
   useUpdateOrderStatusMutation,
   useAllUserQuery,
-  useUpdateOrderMutation, 
+  useUpdateOrderMutation,
+  useChangePasswordMutation,
+  useUpdateAdminMutation,
+  useDeleteOrderMutation,
+  useGetSingleOrderQuery
 } = authApi;
