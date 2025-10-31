@@ -6,7 +6,8 @@ import { useGetMeQuery } from "@/redux/fetures/auth/authApi";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { FaHome } from "react-icons/fa";
 import { useAppSelector } from "@/redux/fetures/hooks";
-import { userCurrentUser } from "@/redux/fetures/auth/authSlice";
+import { logOut, userCurrentUser } from "@/redux/fetures/auth/authSlice";
+import { useDispatch } from "react-redux";
 
 const MainSidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -14,6 +15,19 @@ const MainSidebar = () => {
   const role = user?.userInfo?.role;
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    // 1️⃣ Redux state clear
+    dispatch(logOut());
+
+    // 2️⃣ Clear localStorage (যদি token store থাকে)
+    localStorage.removeItem("token");
+
+    // 3️⃣ Redirect to login page
+    window.location.href = "/login";
   };
 
   const closeSidebar = () => {
@@ -114,24 +128,51 @@ const MainSidebar = () => {
             ))}
           </ul>
         </div>
-        <div className="absolute bottom-4 left-4 text-cyan-600 dark:text-cyan-400 text-xs">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12 border-2 border-white/20">
-              <AvatarImage
-                src={meData?.profileImage || "https://github.com/shadcn.png"}
-              />
-              <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-cyan-600">
-                {meData?.name ? meData.name.charAt(0).toUpperCase() : "U"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="font-semibold text-sm">
-                {meData?.name || "User"}
-              </span>
-              <span className="text-xs text-gray-400">
-                {meData?.email || "user@example.com"}
-              </span>
+
+        <div className="absolute bottom-4 px-4 left-0 w-full text-cyan-600 dark:text-cyan-400 text-xs flex justify-center">
+          <div className="flex flex-col items-center gap-3 w-full max-w-xs bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
+            {/* Avatar */}
+            <div className="flex items-center">
+              <Avatar className="h-12 w-12 border-2 border-white/20">
+                <AvatarImage
+                  src={meData?.profileImage || "https://github.com/shadcn.png"}
+                />
+                <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-cyan-600">
+                  {meData?.name ? meData.name.charAt(0).toUpperCase() : "U"}
+                </AvatarFallback>
+              </Avatar>
+
+              {/* User Info */}
+              <div className="flex flex-col items-center text-center">
+                <span className="font-semibold text-sm">
+                  {meData?.name || "User"}
+                </span>
+                <span className="text-xs text-gray-400">
+                  {meData?.email || "user@example.com"}
+                </span>
+              </div>
             </div>
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-semibold text-white bg-red-500 rounded-full shadow hover:bg-red-600 transition-all duration-200"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5"
+                />
+              </svg>
+              Logout
+            </button>
           </div>
         </div>
       </div>

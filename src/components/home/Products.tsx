@@ -14,43 +14,55 @@ export default function Products() {
 
   // ---------- Categories ----------
   const categories = useMemo(
-    () => ["All", ...new Set(products.map((p) => p.category?.name || p.category))],
+    () => [
+      "All",
+      ...new Set(products.map((p) => p.category?.name || p.category)),
+    ],
     [products]
   );
 
   // ---------- Filtered & Sorted Products ----------
- const filteredProducts = useMemo(() => {
-  let filtered = [...products]; // <-- make a copy
+  const filteredProducts = useMemo(() => {
+    let filtered = [...products]; // <-- make a copy
 
-  // Category Filter
-  if (selectedCategory !== "All") {
-    filtered = filtered.filter(
-      (p) =>
-        (p.category?._id || p.category) === selectedCategory ||
-        (p.category?.name || p.category) === selectedCategory
+    // Category Filter
+    if (selectedCategory !== "All") {
+      filtered = filtered.filter(
+        (p) =>
+          (p.category?._id || p.category) === selectedCategory ||
+          (p.category?.name || p.category) === selectedCategory
+      );
+    }
+
+    // Search Filter (case-insensitive)
+    if (search) {
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(search.toLowerCase()) ||
+          (p.brand?.toLowerCase() || "").includes(search.toLowerCase())
+      );
+    }
+
+    // Sort by price
+    filtered.sort((a, b) =>
+      sortOrder === "asc" ? a.price - b.price : b.price - a.price
     );
-  }
 
-  // Search Filter (case-insensitive)
-  if (search) {
-    filtered = filtered.filter(
-      (p) =>
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        (p.brand?.toLowerCase() || "").includes(search.toLowerCase())
-    );
-  }
-
-  // Sort by price
-  filtered.sort((a, b) =>
-    sortOrder === "asc" ? a.price - b.price : b.price - a.price
-  );
-
-  return filtered;
-}, [products, selectedCategory, search, sortOrder]);
-
+    return filtered;
+  }, [products, selectedCategory, search, sortOrder]);
 
   if (isLoading)
-    return <p className="text-center py-10 text-gray-500">Loading products...</p>;
+    return (
+      <div className="flex flex-col items-center justify-center py-20 space-y-4">
+        {/* Spinner */}
+        <div className="w-12 h-12 border-4 border-cyan-300 border-t-cyan-600 rounded-full animate-spin"></div>
+
+        {/* Loading Text */}
+        <p className="text-gray-500 font-medium text-center text-sm sm:text-base">
+          Loading products...
+        </p>
+      </div>
+    );
 
   return (
     <main className="max-w-6xl mx-auto lg:px-3 my-10">

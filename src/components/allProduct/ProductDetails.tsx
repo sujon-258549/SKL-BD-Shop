@@ -353,7 +353,7 @@ const ProductDetails = () => {
                 {/* Price */}
                 <div className="flex items-center gap-2">
                   <span className="text-xl md:text-2xl font-bold text-cyan-600">
-                    ${product.price}
+                    {product.price}
                   </span>
                   {product.stock > 0 ? (
                     <span className="flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
@@ -473,9 +473,9 @@ const ProductDetails = () => {
                 </h3>
                 <div className="flex justify-between items-center mt-2">
                   <p className="text-cyan-600 text-sm">
-                    ${product.price} × {orderData.orderQuantity}
+                    {product.price} × {orderData.orderQuantity}
                   </p>
-                  <p className="text-cyan-700 font-bold">${productTotal}</p>
+                  <p className="text-cyan-700 font-bold">{productTotal}</p>
                 </div>
               </div>
             </div>
