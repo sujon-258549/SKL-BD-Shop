@@ -7,7 +7,7 @@ export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   // ---------- Fetch Products ----------
-  const { data: productsResponse, isLoading } = useGetAllProductQuery("");
+  const { data: productsResponse, isLoading , isFetching } = useGetAllProductQuery("");
   const products = productsResponse?.data || [];
 
   // ---------- Categories ----------
@@ -38,7 +38,7 @@ export default function Products() {
     return filtered;
   }, [products, selectedCategory,]);
 
-  if (isLoading)
+  if (isLoading || isFetching)
     return (
       <div className="flex flex-col items-center justify-center py-20 space-y-4">
         {/* Spinner */}

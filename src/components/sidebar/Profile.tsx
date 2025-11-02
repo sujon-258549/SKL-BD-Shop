@@ -24,12 +24,12 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const AdminProfile = () => {
-  const { data: profile, isLoading, refetch } = useGetMeQuery("");
+  const { data: profile, isLoading, refetch , isFetching} = useGetMeQuery("");
   const navigate = useNavigate();
 
   console.log(profile);
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return <LoadingPage />;
   }
 

@@ -16,9 +16,9 @@ import { FaBangladeshiTakaSign } from "react-icons/fa6";
 
 
 const UserDashboard = () => {
-  const { data: ordersData, isLoading } = useGetMyOrderQuery('');
+  const { data: ordersData, isLoading , isFetching} = useGetMyOrderQuery('');
   
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return <LoadingPage/>;
   }
 

@@ -26,10 +26,10 @@ const OrderDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data: orderData, isLoading } = useGetSingleOrderQuery(id);
+  const { data: orderData, isLoading , isFetching} = useGetSingleOrderQuery(id);
   const order = orderData?.data;
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">

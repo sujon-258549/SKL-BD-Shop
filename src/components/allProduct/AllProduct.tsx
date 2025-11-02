@@ -28,7 +28,7 @@ const AllProduct = () => {
   }, [currentPage, search]);
 
   // API call
-  const { data: product, isLoading } = useGetAllProductQuery(queryParams);
+  const { data: product, isLoading , isFetching} = useGetAllProductQuery(queryParams);
   const products = product?.data || [];
   const totalPages = product?.meta?.totalPage || 1;
 
@@ -68,7 +68,7 @@ const AllProduct = () => {
   };
 
   // Loading state
-  if (isLoading) return <LoadingPage />;
+  if (isLoading || isFetching) return <LoadingPage />;
 
   return (
     <div className="py-12 px-4  max-w-6xl mx-auto">

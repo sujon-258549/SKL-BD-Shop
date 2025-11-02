@@ -71,7 +71,7 @@ const AllProductTable = () => {
   }, [currentPage, search, statusFilter, stockFilter, sortField, sortDirection]);
 
   // API call
-  const { data: product, isLoading } = useGetAllProductQuery(queryParams);
+  const { data: product, isLoading , isFetching } = useGetAllProductQuery(queryParams);
   const products = product?.data || [];
   const totalPages = product?.meta?.totalPage || 1;
 
@@ -92,7 +92,7 @@ const AllProductTable = () => {
   };
 
   // Loading state
-  if (isLoading) return <LoadingPage />;
+  if (isLoading || isFetching) return <LoadingPage />;
 
   return (
     <div className="p-6 max-w-7xl mx-auto">

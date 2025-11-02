@@ -44,7 +44,7 @@ import { districts } from "../shipping/district";
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: response, isLoading, error } = useGetSingleProductQuery(id);
+  const { data: response, isLoading, error ,isFetching } = useGetSingleProductQuery(id);
   const [createOrder, { isLoading: isCreatingOrder }] =
     useCreateOrderMutation();
   const [isFavorite, setIsFavorite] = useState(false);
@@ -208,7 +208,7 @@ const ProductDetails = () => {
   const deliveryCharge =
     deliveryCharges[deliveryOption as keyof typeof deliveryCharges];
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-50 to-blue-100">
         <div className="flex flex-col items-center gap-4">

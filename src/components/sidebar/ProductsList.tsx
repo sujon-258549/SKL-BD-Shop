@@ -61,7 +61,7 @@ const ProductsList: React.FC = () => {
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
 
-  const { data: productsResponse, isLoading: isLoadingProducts } =
+  const { data: productsResponse, isLoading: isLoadingProducts , isFetching} =
     useGetAllProductQuery("");
   const products = productsResponse?.data || [];
 
@@ -148,7 +148,7 @@ const ProductsList: React.FC = () => {
     }
   };
 
-  if (isLoadingProducts) return <LoadingPage />;
+  if (isLoadingProducts || isFetching) return <LoadingPage />;
 
   // ---------- Main UI ----------
   return (

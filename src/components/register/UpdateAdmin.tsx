@@ -37,7 +37,7 @@ const UpdateAdmin = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [currentFile, setCurrentFile] = useState<File | undefined>(undefined);
 
-  const { data: profile, isLoading: profileLoading } = useGetMeQuery("");
+  const { data: profile, isLoading: profileLoading , isFetching } = useGetMeQuery("");
   const [updateAdmin, { isLoading: isUpdating }] = useUpdateAdminMutation();
   const navigate = useNavigate();
 
@@ -125,7 +125,7 @@ const UpdateAdmin = () => {
     }
   };
 
-  if (profileLoading) {
+  if (profileLoading || isFetching) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

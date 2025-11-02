@@ -84,6 +84,7 @@ const AdminDashboard = () => {
     data: orderData,
     isLoading,
     refetch,
+    isFetching
   } = useGetAllOrderQuery(queryParams);
 
   const [updateOrderStatus] = useUpdateOrderStatusMutation();
@@ -252,7 +253,7 @@ const AdminDashboard = () => {
             </Tabs>
 
             {/* Table */}
-            {isLoading ? (
+            {isLoading || isFetching ? (
               <div className="flex justify-center items-center py-16">
                 <div className="text-center">
                   <Loader2 className="h-12 w-12 animate-spin text-cyan-600 mx-auto mb-4" />
