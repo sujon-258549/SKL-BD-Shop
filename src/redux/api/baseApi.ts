@@ -3,8 +3,8 @@ import type { RootState } from "../fetures/store";
 import { logOut } from "../fetures/auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://backend-black-two-21.vercel.app/api", // vercel backend api
-  // baseUrl: "http://localhost:4000/api",
+  // baseUrl: "https://backend-black-two-21.vercel.app/api", // vercel backend api
+  baseUrl: "http://localhost:4000/api",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth?.token;
     if (token) {
