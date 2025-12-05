@@ -62,7 +62,7 @@ const AllProductTable = () => {
       params.push({ name: "status", value: statusFilter });
     }
     if (stockFilter !== "all") {
-        // @ts-expect-error
+        // @ts-expect-error - stockStatus expects boolean but API accepts it as string
       params.push({ name: "stockStatus", value: stockFilter === "inStock" });
     }
     params.push({ name: "sort", value: `${sortField}:${sortDirection}` });
@@ -183,17 +183,29 @@ const AllProductTable = () => {
               products.map((product) => (
                 <TableRow key={product._id}>
                   <TableCell>
-                    {product.photo?.length > 0 ? (
-                      <img
-                        src={product.photo[0]}
-                        alt={product.name}
-                        className="h-10 w-10 rounded-md object-cover"
-                      />
-                    ) : (
-                      <div className="h-10 w-10 rounded-md bg-gray-100 flex items-center justify-center">
-                        <ImageIcon className="h-5 w-5 text-gray-400" />
-                      </div>
-                    )}
+                    {(() => {
+                      // Handle both photos array and single photo
+                      const imageUrl = 
+                        (product.photos && Array.isArray(product.photos) && product.photos.length > 0)
+                          ? product.photos[0]
+                          : (product.photo && Array.isArray(product.photo) && product.photo.length > 0)
+                          ? product.photo[0]
+                          : (product.photo && typeof product.photo === "string")
+                          ? product.photo
+                          : null;
+                      
+                      return imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={product.name}
+                          className="h-10 w-10 rounded-md object-cover"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-md bg-gray-100 flex items-center justify-center">
+                          <ImageIcon className="h-5 w-5 text-gray-400" />
+                        </div>
+                      );
+                    })()}
                   </TableCell>
                   <TableCell>
                     <div className="font-medium">{product.name}</div>
@@ -211,7 +223,7 @@ const AllProductTable = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
-                      {product.category?.slice(0, 2).map((cat: any) => (
+                      {product.category?.slice(0, 2).map((cat: { _id: string; name: string }) => (
                         <Badge 
                           key={cat._id} 
                           variant="outline"

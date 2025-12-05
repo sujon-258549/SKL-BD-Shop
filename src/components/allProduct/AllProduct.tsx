@@ -29,7 +29,7 @@ const AllProduct = () => {
 
   // API call
   const { data: product, isLoading , isFetching} = useGetAllProductQuery(queryParams);
-  const products = product?.data || [];
+  const products = useMemo(() => product?.data || [], [product?.data]);
   const totalPages = product?.meta?.totalPage || 1;
 
   // Track current photo index per product
@@ -40,7 +40,16 @@ const AllProduct = () => {
     if (products.length > 0) {
       const initialIndexes: Record<string, number> = {};
       products.forEach((p) => {
-        initialIndexes[p._id] = 0;
+        const photosArray = Array.isArray(p.photos)
+          ? p.photos
+          : Array.isArray(p.photo)
+          ? p.photo
+          : p.photo
+          ? [p.photo]
+          : [];
+        if (photosArray.length > 0) {
+          initialIndexes[p._id] = 0;
+        }
       });
       setCurrentPhotoIndexes(initialIndexes);
     }
@@ -71,21 +80,21 @@ const AllProduct = () => {
   if (isLoading || isFetching) return <LoadingPage />;
 
   return (
-    <div className="py-12 px-4  max-w-6xl mx-auto">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50/50 to-blue-50/50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-cyan-800 mb-3 tracking-tight">
-            All Product
+        <div className="text-center mb-10 sm:mb-12 lg:mb-16">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent mb-3 sm:mb-4 tracking-tight">
+            All Products
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
             Explore our products with interactive cards showcasing details, pricing, and availability.
           </p>
         </div>
 
         {/* Search */}
-        <div className="mb-10">
-          <form className="max-w-md mx-auto" onSubmit={handleSubmit}>
+        <div className="mb-10 sm:mb-12">
+          <form className="max-w-2xl mx-auto" onSubmit={handleSubmit}>
             <div className="relative">
               <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                 <svg
@@ -108,15 +117,15 @@ const AllProduct = () => {
               <Input
                 type="search"
                 id="default-search"
-                placeholder="Search Mockups, Logos..."
+                placeholder="Search products..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-[45px] ps-10 pr-24"
+                className="w-full h-12 sm:h-14 ps-12 pr-28 text-base rounded-xl border-2 border-gray-200 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200"
               />
 
               <Button
                 type="submit"
-                className="absolute end-2.5 bottom-1 text-white bg-blue-700 hover:bg-blue-800"
+                className="absolute end-2 bottom-1.5 sm:bottom-2 text-white bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 shadow-md hover:shadow-lg transition-all rounded-lg px-4 py-2 font-semibold"
               >
                 Search
               </Button>
@@ -130,19 +139,28 @@ const AllProduct = () => {
             <p className="text-xl text-gray-500">No products found</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
             {products.map((product) => {
+              // Get photos array (support both photos and photo for backward compatibility)
+              const photosArray = Array.isArray(product.photos)
+                ? product.photos
+                : Array.isArray(product.photo)
+                ? product.photo
+                : product.photo
+                ? [product.photo]
+                : [];
+
               const currentIndex = currentPhotoIndexes[product._id] || 0;
-              const currentPhoto = product.photo?.[currentIndex] || "";
+              const currentPhoto = photosArray[currentIndex] || "";
 
               return (
                 <div
                   key={product._id}
-                  className="relative bg-white/70 backdrop-blur-lg rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-200 group overflow-hidden"
+                  className="relative bg-white rounded-2xl sm:rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 border-2 border-gray-200 group overflow-hidden hover:border-cyan-400 hover:-translate-y-1"
                 >
                   {/* Product image */}
                   <div className="relative h-64 overflow-hidden">
-                    {product.photo?.length > 0 ? (
+                    {photosArray.length > 0 ? (
                       <>
                         <img
                           src={currentPhoto}
@@ -151,23 +169,23 @@ const AllProduct = () => {
                         />
 
                         {/* Photo navigation */}
-                        {product.photo.length > 1 && (
+                        {photosArray.length > 1 && (
                           <>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                prevPhoto(product._id, product.photo.length);
+                                prevPhoto(product._id, photosArray.length);
                               }}
-                              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full"
+                              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full z-10"
                             >
                               <RxChevronLeft className="w-5 h-5" />
                             </button>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                nextPhoto(product._id, product.photo.length);
+                                nextPhoto(product._id, photosArray.length);
                               }}
-                              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full"
+                              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full z-10"
                             >
                               <RxChevronRight className="w-5 h-5" />
                             </button>
@@ -175,7 +193,35 @@ const AllProduct = () => {
                         )}
 
                         {/* Photo indicators */}
-                       
+                        {photosArray.length > 1 && (
+                          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                            {photosArray.map((_: string, index: number) => (
+                              <button
+                                key={index}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCurrentPhotoIndexes((prev) => ({
+                                    ...prev,
+                                    [product._id]: index,
+                                  }));
+                                }}
+                                className={`w-2 h-2 rounded-full transition-all ${
+                                  index === currentIndex
+                                    ? "bg-white w-6"
+                                    : "bg-white/50 hover:bg-white/75"
+                                }`}
+                                aria-label={`Go to image ${index + 1}`}
+                              />
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Photo index counter */}
+                        {photosArray.length > 1 && (
+                          <div className="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded-full z-10">
+                            {currentIndex + 1} / {photosArray.length}
+                          </div>
+                        )}
                       </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -184,11 +230,11 @@ const AllProduct = () => {
                     )}
 
                     {/* Stock status */}
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold py-1 px-3 rounded-full text-sm shadow-lg">
+                    <div className="absolute top-3 right-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-1.5 px-3 rounded-full text-xs shadow-lg backdrop-blur-sm">
                       {product.stockStatus ? (
-                        <span className="text-sm">✅ In Stock</span>
+                        <span className="text-xs sm:text-sm">✅ In Stock</span>
                       ) : (
-                        <span className="text-sm flex gap-1 items-center">
+                        <span className="text-xs sm:text-sm flex gap-1 items-center">
                           <RxCross2 /> Out of Stock
                         </span>
                       )}
@@ -196,33 +242,34 @@ const AllProduct = () => {
 
                     {/* Product status */}
                     <div
-                      className={`absolute top-4 left-4 text-white font-semibold py-1 px-3 rounded-full text-sm shadow-md ${product.status === "active" ? "bg-green-500" : "bg-gray-500"
-                        }`}
+                      className={`absolute top-3 left-3 text-white font-semibold py-1.5 px-3 rounded-full text-xs shadow-md backdrop-blur-sm ${
+                        product.status === "active"
+                          ? "bg-gradient-to-r from-green-500 to-emerald-600"
+                          : "bg-gradient-to-r from-gray-500 to-gray-600"
+                      }`}
                     >
                       {product.status.toUpperCase()}
                     </div>
                   </div>
 
                   {/* Product details */}
-                  <div className="p-6">
+                  <div className="p-5 sm:p-6">
                     <h2
-                      className="text-xl font-semibold text-gray-900 mb-2 truncate"
+                      className="text-lg sm:text-xl font-bold text-gray-900 mb-3 line-clamp-2 min-h-[3rem]"
                       title={product.name}
                     >
                       {product.name}
                     </h2>
 
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-2xl font-bold text-cyan-700">
-                      </span>
-                      <span className="text-gray-400 line-through">
-                        ${product.price.toFixed(2)}
+                    <div className="flex items-baseline gap-2 mb-4">
+                      <span className="text-2xl sm:text-3xl font-extrabold text-cyan-600">
+                        ৳{product.price.toFixed(2)}
                       </span>
                     </div>
 
                     <div className="flex flex-wrap gap-2 mb-4">
                       {product.category?.length > 0 ? (
-                        product.category.slice(0, 2).map((cat: any) => (
+                        product.category.slice(0, 2).map((cat: { _id: string; name: string }) => (
                           <span
                             key={cat._id}
                             className="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full font-medium"
@@ -235,10 +282,10 @@ const AllProduct = () => {
                       )}
                     </div>
 
-                    <div className="flex gap-2 justify-between items-center mt-5">
-                      <Link to={`/product/${product._id}`} className="w-full">
+                    <div className="flex gap-2 justify-between items-center mt-6">
+                      <Link to={`/product/${product._id}`} className="flex-1">
                         <Button
-                          className="w-full cursor-pointer text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full cursor-pointer text-white bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <svg
                             width="16"
@@ -260,9 +307,9 @@ const AllProduct = () => {
                       </Link>
 
                       {/* AddToCart button */}
-                      <AddToCart product={product}
-
-                      />
+                      <div className="flex-shrink-0">
+                        <AddToCart product={product} />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -270,15 +317,15 @@ const AllProduct = () => {
             })}
           </div>
         )}
-      </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center mt-16">
-        <ResponsivePagination
-          current={currentPage}
-          total={totalPages}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
+        {/* Pagination */}
+        <div className="mt-10 sm:mt-12 flex justify-center">
+          <ResponsivePagination
+            current={currentPage}
+            total={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        </div>
       </div>
     </div>
   );

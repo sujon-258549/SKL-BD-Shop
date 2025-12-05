@@ -9,8 +9,16 @@ interface ProtectedRouteProps {
   children: ReactNode;
 }
 
+interface TUser {
+  userInfo?: {
+    role?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
 const ProtectedRoute = ({ allowedRoles, children }: ProtectedRouteProps) => {
-  const user = useAppSelector(userCurrentUser) as any;
+  const user = useAppSelector(userCurrentUser) as TUser | null;
   const role = user?.userInfo?.role;
 
   // Not logged in → redirect to login

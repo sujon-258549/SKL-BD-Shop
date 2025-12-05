@@ -10,17 +10,18 @@ export type TCategory = {
 
 
 export interface TProduct {
-  status: any;
-  stockStatus: any;
-  discount(discount: any): unknown;
-  orderQuantity: string | number | readonly string[] | undefined;
+  status?: "active" | "inactive" | string;
+  stockStatus?: boolean;
+  discount?: (discount: number) => number;
+  orderQuantity?: string | number | readonly string[] | undefined;
   _id: string;
   name: string; // Product name
-  photo: string; // Product image URL
+  photo?: string | string[]; // Product image URL (single or array for backward compatibility)
+  photos?: string[]; // Product images array
   description: string; // Product description
   price: number; // Unit price
   stock: number; // Available stock
-  category: any; // Linked category
+  category?: TCategory | TCategory[] | string | string[]; // Linked category
   brand?: string; // Brand name (optional)
   createdAt: string;
   //   updatedAt: string;

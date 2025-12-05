@@ -1,21 +1,24 @@
-import AllProduct from "@/components/allProduct/AllProduct";
-import ProductDetails from "@/components/allProduct/ProductDetails";
-import Home from "@/components/home/Home";
-import LoginForm from "@/components/login/LoginForm";
-// import LoginForm from "../../components/login/Login";
-import Main from "@/components/main/Main";
-import Shipping from "@/components/shipping/Shipping";
-import CreateCategory from "@/components/sidebar/CreateCategory";
-import Dashboard from "@/components/sidebar/dashboard/Dashboard";
-import MainSidebar from "@/components/sidebar/MainSidebar";
-import Profile from "@/components/sidebar/Profile";
+import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
+import Main from "@/components/main/Main";
 import ProtectedRoute from "./ProtectedRoute";
-import AllProductTable from "@/components/sidebar/AllProductTable";
-import ProductsList from "@/components/sidebar/ProductsList";
-import UpdateAdmin from "@/components/register/UpdateAdmin";
-import ChangePassword from "@/components/login/ChangePassword";
-import OrderDetails from "@/components/sidebar/dashboard/OrderDetails";
+import { SuspenseWrapper } from "./SuspenseWrapper";
+
+// Lazy load components for code splitting and faster initial load
+const AllProduct = lazy(() => import("@/components/allProduct/AllProduct"));
+const ProductDetails = lazy(() => import("@/components/allProduct/ProductDetails"));
+const Home = lazy(() => import("@/components/home/Home"));
+const LoginForm = lazy(() => import("@/components/login/LoginForm"));
+const Shipping = lazy(() => import("@/components/shipping/Shipping"));
+const CreateCategory = lazy(() => import("@/components/sidebar/CreateCategory"));
+const Dashboard = lazy(() => import("@/components/sidebar/dashboard/Dashboard"));
+const MainSidebar = lazy(() => import("@/components/sidebar/MainSidebar"));
+const Profile = lazy(() => import("@/components/sidebar/Profile"));
+const AllProductTable = lazy(() => import("@/components/sidebar/AllProductTable"));
+const ProductsList = lazy(() => import("@/components/sidebar/ProductsList"));
+const UpdateAdmin = lazy(() => import("@/components/register/UpdateAdmin"));
+const ChangePassword = lazy(() => import("@/components/login/ChangePassword"));
+const OrderDetails = lazy(() => import("@/components/sidebar/dashboard/OrderDetails"));
 
 export const router = createBrowserRouter([
   {
@@ -24,35 +27,61 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />,
+        element: (
+          <SuspenseWrapper>
+            <Home />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: "/all-product",
-        element: <AllProduct />,
+        element: (
+          <SuspenseWrapper>
+            <AllProduct />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: "/shipping",
-        element: <Shipping />,
+        element: (
+          <SuspenseWrapper>
+            <Shipping />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: "/product/:id",
-        element: <ProductDetails />,
+        element: (
+          <SuspenseWrapper>
+            <ProductDetails />
+          </SuspenseWrapper>
+        ),
       },
     ],
   },
   {
     path: "/login",
-    element: <LoginForm />,
+    element: (
+      <SuspenseWrapper>
+        <LoginForm />
+      </SuspenseWrapper>
+    ),
   },
   {
     path: "/dashboard",
-    element: <MainSidebar></MainSidebar>,
+    element: (
+      <SuspenseWrapper>
+        <MainSidebar></MainSidebar>
+      </SuspenseWrapper>
+    ),
     children: [
       {
         path: "/dashboard",
         element: (
           <ProtectedRoute allowedRoles={["admin", "user"]}>
-            <Dashboard />
+            <SuspenseWrapper>
+              <Dashboard />
+            </SuspenseWrapper>
           </ProtectedRoute>
         ),
       },
@@ -60,7 +89,9 @@ export const router = createBrowserRouter([
         path: "/dashboard/create-category",
         element: (
           <ProtectedRoute allowedRoles={["admin"]}>
-            <CreateCategory />
+            <SuspenseWrapper>
+              <CreateCategory />
+            </SuspenseWrapper>
           </ProtectedRoute>
         ),
       },
@@ -68,8 +99,9 @@ export const router = createBrowserRouter([
         path: "/dashboard/create-product",
         element: (
           <ProtectedRoute allowedRoles={["admin"]}>
-            {" "}
-            <ProductsList />
+            <SuspenseWrapper>
+              <ProductsList />
+            </SuspenseWrapper>
           </ProtectedRoute>
         ),
       },
@@ -77,8 +109,9 @@ export const router = createBrowserRouter([
         path: "/dashboard/profile",
         element: (
           <ProtectedRoute allowedRoles={["admin", "user"]}>
-            {" "}
-            <Profile />
+            <SuspenseWrapper>
+              <Profile />
+            </SuspenseWrapper>
           </ProtectedRoute>
         ),
       },
@@ -86,8 +119,9 @@ export const router = createBrowserRouter([
         path: "/dashboard/all-product-table",
         element: (
           <ProtectedRoute allowedRoles={["admin"]}>
-            {" "}
-            <AllProductTable />
+            <SuspenseWrapper>
+              <AllProductTable />
+            </SuspenseWrapper>
           </ProtectedRoute>
         ),
       },
@@ -95,8 +129,9 @@ export const router = createBrowserRouter([
         path: "/dashboard/update-admin",
         element: (
           <ProtectedRoute allowedRoles={["admin"]}>
-            {" "}
-            <UpdateAdmin />
+            <SuspenseWrapper>
+              <UpdateAdmin />
+            </SuspenseWrapper>
           </ProtectedRoute>
         ),
       },
@@ -104,8 +139,9 @@ export const router = createBrowserRouter([
         path: "/dashboard/change-password",
         element: (
           <ProtectedRoute allowedRoles={["admin"]}>
-            {" "}
-            <ChangePassword />
+            <SuspenseWrapper>
+              <ChangePassword />
+            </SuspenseWrapper>
           </ProtectedRoute>
         ),
       },
@@ -113,8 +149,9 @@ export const router = createBrowserRouter([
         path: "/dashboard/order-details/:id",
         element: (
           <ProtectedRoute allowedRoles={["admin"]}>
-            {" "}
-            <OrderDetails />
+            <SuspenseWrapper>
+              <OrderDetails />
+            </SuspenseWrapper>
           </ProtectedRoute>
         ),
       },

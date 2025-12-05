@@ -60,7 +60,7 @@ export default function FooterSection({
       ],
     },
   ],
-  copyright = "© 2025 Mikołaj Dobrucki. All rights reserved",
+  copyright = `© ${new Date().getFullYear()} E-Commerce. All rights reserved. Created by Sujon`,
   policies = [
     { text: "Privacy Policy", href: "https://www.launchuicomponents.com/" },
     { text: "Terms of Service", href: "https://www.launchuicomponents.com/" },

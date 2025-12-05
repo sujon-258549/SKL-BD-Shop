@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Minus,
   Plus,
@@ -23,48 +23,42 @@ import {
   clearAllCart,
   clearCart,
   decrementProductQuantity,
-  deliveryAmount,
   deliveryAmountValue,
   incrementProductQuantity,
   orderSelector,
 } from "@/redux/fetures/card/shippingSlice";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { districts } from "./district";
+
 import { toast } from "sonner";
 import { useCreateOrderMutation } from "@/redux/fetures/auth/authApi";
 import { userCurrentUser } from "@/redux/fetures/auth/authSlice";
 import { Link } from "react-router-dom";
 
-// ...imports stay the same
+interface TUser {
+  userInfo?: {
+    name?: string;
+    phone?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
 
 const Shipping = () => {
   const dispatch = useAppDispatch();
   const products = useAppSelector(orderSelector);
   const deliveryCost = useAppSelector(deliveryAmountValue);
-  const user = useAppSelector(userCurrentUser) as any;
+  const user = useAppSelector(userCurrentUser) as TUser | null;
 
   const [name, setName] = useState(user?.userInfo?.name || "");
   const [phone, setPhone] = useState(user?.userInfo?.phone || "");
-  const [district, setDistrict] = useState("");
   const [address, setAddress] = useState("");
   const [createOrder] = useCreateOrderMutation();
 
-  useEffect(() => {
-    dispatch(deliveryAmount(district));
-  }, [district, dispatch]);
-
   // Quantity handlers
-  const incrementQuantity = (product: any) =>
+  const incrementQuantity = (product: typeof products[number]) =>
     dispatch(incrementProductQuantity(product));
-  const decrementQuantity = (product: any) =>
+  const decrementQuantity = (product: typeof products[number]) =>
     dispatch(decrementProductQuantity(product));
-  const removeItem = (product: any) => dispatch(clearCart(product));
+  const removeItem = (product: typeof products[number]) => dispatch(clearCart(product));
 
   // Price calculations
   const subtotal = products.reduce(
@@ -92,7 +86,7 @@ const Shipping = () => {
       },
       address: {
         address,
-        district,
+        district: "",
       },
       totalAmount: totalPrice,
     };
@@ -170,17 +164,29 @@ const Shipping = () => {
                     <div className="flex flex-col md:flex-row md:items-center gap-6">
                       {/* Product Image */}
                       <div className="flex-shrink-0">
-                        {item.photo ? (
-                          <img
-                            src={item.photo}
-                            alt={item.name}
-                            className="h-28 w-28 rounded-lg object-contain border border-gray-200 dark:border-gray-700"
-                          />
-                        ) : (
-                          <div className="h-28 w-28 rounded-lg bg-gray-200 flex items-center justify-center dark:bg-gray-700">
-                            No Image
-                          </div>
-                        )}
+                        {(() => {
+                          const product = item as { photos?: string[]; photo?: string | string[]; name?: string };
+                          const imageUrl = 
+                            (product.photos && Array.isArray(product.photos) && product.photos.length > 0)
+                              ? product.photos[0]
+                              : (product.photo && typeof product.photo === "string")
+                              ? product.photo
+                              : (product.photo && Array.isArray(product.photo) && product.photo.length > 0)
+                              ? product.photo[0]
+                              : null;
+                          
+                          return imageUrl ? (
+                            <img
+                              src={imageUrl}
+                              alt={product.name || "Product"}
+                              className="h-28 w-28 rounded-lg object-contain border border-gray-200 dark:border-gray-700"
+                            />
+                          ) : (
+                            <div className="h-28 w-28 rounded-lg bg-gray-200 flex items-center justify-center dark:bg-gray-700">
+                              No Image
+                            </div>
+                          );
+                        })()}
                       </div>
 
                       {/* Product Info */}
@@ -300,42 +306,17 @@ const Shipping = () => {
                       />
                     </div>
 
-                    {/* District Selection */}
-                    <p className="text-lg font-medium mb-2 text-cyan-900">
-                      Select District
-                    </p>
-                    <Select onValueChange={setDistrict}>
-                      <SelectTrigger className="w-full border border-cyan-900 rounded-md bg-cyan-50 hover:bg-cyan-100 focus:ring-2 focus:ring-cyan-400">
-                        <SelectValue placeholder="Select District" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-cyan-50 border border-cyan-400 rounded-md">
-                        {districts.map((d) => (
-                          <SelectItem
-                            key={d}
-                            value={d}
-                            className="hover:bg-cyan-200 focus:bg-cyan-300"
-                          >
-                            {d}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    {district && (
-                      <p className="mt-2 text-cyan-800 font-semibold">
-                        Selected: {district}
-                      </p>
-                    )}
-
                     {/* Address Input */}
                     <div>
-                      <p className="mt-4">Enter your Address</p>
+                      <p className="text-lg font-medium mb-2 text-cyan-900">
+                        Enter your Address
+                      </p>
                       <Input
                         type="text"
                         placeholder="Enter your address"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
-                        className="border mt-2 border-cyan-800 rounded-md p-2"
+                        className="border border-cyan-800 rounded-md p-2 w-full"
                       />
                     </div>
                   </div>
